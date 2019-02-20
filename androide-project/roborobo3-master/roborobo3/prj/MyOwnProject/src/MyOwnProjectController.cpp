@@ -19,6 +19,7 @@ MyOwnProjectController::MyOwnProjectController( RobotWorldModel *__wm ) : Contro
         std::cerr << "[CRITICAL] This project assumes robot specifications with " << NB_SENSORS << " sensors (provided: " << _wm->_cameraSensorsNb << " sensors). STOP.\n";
         exit(-1);
     }
+    this->setObjCollected(false);
     
     size_t nbParams = 14;
     _params.resize(nbParams,0); // initialize an array with zero values.
@@ -78,7 +79,7 @@ void MyOwnProjectController::step()
     double minRampSpeed = -0.3;
     double orientation = getOrientation();
 
-    if (p.x > 250 && p.x < 670 && p.y > 450 && p.y < 700 && orientation < 0.0){
+    if (/*p.x > 250 && p.x < 670 &&*/ p.y > 450&& p.y < 700 && orientation < 0.0){
         if(normalT > maxRampSpeed)
             setTranslation(maxRampSpeed);
         else if (normalT < minRampSpeed)
@@ -86,7 +87,7 @@ void MyOwnProjectController::step()
         else
             setTranslation(normalT);     
     }
-    else if (p.x > 250 && p.x < 670 && p.y > 450 && p.y < 700 && orientation >= 0.0){
+    else if (/*p.x > 250 && p.x < 670 && */p.y > 450 && p.y < 700 && orientation >= 0.0){
             if (normalT <= 0.9)
                 normalT += 0.2;
             else if (normalT >= -0.9)
@@ -105,10 +106,12 @@ void MyOwnProjectController::step()
     double dist_FR = getDistanceAt(SENSOR_FR);
     double dist_FFR = getDistanceAt(SENSOR_FFR);
     int objectId = -2;
-    
+    bool objDetected = false;
     objectId = _wm->getObjectIdFromCameraSensor(SENSOR_L);
     if ( PhysicalObject::isInstanceOf(objectId) ){
-        if (1 == gPhysicalObjects[objectId - gPhysicalObjectIndexStartOffset]->getType()){
+        if (gVerbose and 1 == gPhysicalObjects[objectId - gPhysicalObjectIndexStartOffset]->getType()){
+            gPhysicalObjects[objectId - gPhysicalObjectIndexStartOffset]->relocate();
+            objDetected = true;
             std::cout << "TYPE 1 L\n";
             dist_L = 0;
         }
@@ -116,7 +119,9 @@ void MyOwnProjectController::step()
     
     objectId = _wm->getObjectIdFromCameraSensor(SENSOR_FL);
     if ( PhysicalObject::isInstanceOf(objectId) ){
-        if (1 == gPhysicalObjects[objectId - gPhysicalObjectIndexStartOffset]->getType()){
+        if (gVerbose and 1 == gPhysicalObjects[objectId - gPhysicalObjectIndexStartOffset]->getType()){
+            gPhysicalObjects[objectId - gPhysicalObjectIndexStartOffset]->relocate();
+            objDetected = true;
             std::cout << "TYPE 1 FL\n";
             dist_FL = 0;
         }
@@ -124,7 +129,9 @@ void MyOwnProjectController::step()
     
     objectId = _wm->getObjectIdFromCameraSensor(SENSOR_FFL);
     if ( PhysicalObject::isInstanceOf(objectId) ){
-        if (1 == gPhysicalObjects[objectId - gPhysicalObjectIndexStartOffset]->getType()){
+        if (gVerbose and 1 == gPhysicalObjects[objectId - gPhysicalObjectIndexStartOffset]->getType()){
+            gPhysicalObjects[objectId - gPhysicalObjectIndexStartOffset]->relocate();
+            objDetected = true;
             std::cout << "TYPE 1 FFL\n";
             dist_FFL = 0;
         }
@@ -132,7 +139,9 @@ void MyOwnProjectController::step()
     
     objectId = _wm->getObjectIdFromCameraSensor(SENSOR_R);
     if ( PhysicalObject::isInstanceOf(objectId) ){
-        if (1 == gPhysicalObjects[objectId - gPhysicalObjectIndexStartOffset]->getType()){
+        if (gVerbose and 1 == gPhysicalObjects[objectId - gPhysicalObjectIndexStartOffset]->getType()){
+            gPhysicalObjects[objectId - gPhysicalObjectIndexStartOffset]->relocate();
+            objDetected = true;
             std::cout << "TYPE 1 R\n";
             dist_R = 0;
         }
@@ -140,7 +149,9 @@ void MyOwnProjectController::step()
     
     objectId = _wm->getObjectIdFromCameraSensor(SENSOR_FR);
     if ( PhysicalObject::isInstanceOf(objectId) ){
-        if (1 == gPhysicalObjects[objectId - gPhysicalObjectIndexStartOffset]->getType()){
+        if (gVerbose and 1 == gPhysicalObjects[objectId - gPhysicalObjectIndexStartOffset]->getType()){
+            gPhysicalObjects[objectId - gPhysicalObjectIndexStartOffset]->relocate();
+            objDetected = true;
             std::cout << "TYPE 1 FR\n";
             dist_FR = 0;
         }
@@ -148,7 +159,9 @@ void MyOwnProjectController::step()
     
     objectId = _wm->getObjectIdFromCameraSensor(SENSOR_FRR);
     if ( PhysicalObject::isInstanceOf(objectId) ){
-        if (1 == gPhysicalObjects[objectId - gPhysicalObjectIndexStartOffset]->getType()){
+        if (gVerbose and 1 == gPhysicalObjects[objectId - gPhysicalObjectIndexStartOffset]->getType()){
+            gPhysicalObjects[objectId - gPhysicalObjectIndexStartOffset]->relocate();
+            objDetected = true;
             std::cout << "TYPE 1 FFR\n";   
             dist_FFR = 0;
         }
@@ -161,19 +174,55 @@ void MyOwnProjectController::step()
     
     double rotationDelta = 0.3;
     double noiseAmplitude = 0.01;
-    
-    if ( distanceOnMyLeft < distanceOnMyRight )
-        setRotation( +rotationDelta );
-    else if ( distanceOnMyRight < distanceOnMyLeft )
-        setRotation( -rotationDelta );
-    else
-        //setRotation( 0.1 - (double)(random01()*0.2));
-        setRotation( noiseAmplitude * ( 1.0 - (double)(random01()*2.0) ) );    
+    if(!objDetected){
+            
+        if ( distanceOnMyLeft < distanceOnMyRight )
+            setRotation( +rotationDelta );
+        else if ( distanceOnMyRight < distanceOnMyLeft )
+            setRotation( -rotationDelta );
+        else
+            //setRotation( 0.1 - (double)(random01()*0.2));
+            setRotation( noiseAmplitude * ( 1.0 - (double)(random01()*2.0) ) );    
+        
+    }
+    else{
+        //setRotation()
+    }
     
     //monitorSensoryInformation();
     //std::cout << inspect("TEST ");
     //std::cout << _wm->_actualTranslationalValue << "\n";
     //std::cout << _wm->_actualRotationalVelocity << "\n";
+}
+
+bool MyOwnProjectController::getCanCollect(){
+    return this->canCollect;
+}
+bool MyOwnProjectController::getCanDrop(){
+    return this->canDrop;
+}
+bool MyOwnProjectController::getObjCollected(){
+    return this->objCollected;
+}
+
+void MyOwnProjectController::setCanCollect(bool c){
+    this->canCollect = c;
+}
+void MyOwnProjectController::setCanDrop(bool c){
+    this->canDrop = c;
+}
+void MyOwnProjectController::setObjCollected(bool c){
+    this->objCollected = c;
+    if(c == true){
+        std::cout << "Can not collect anymore";
+        this->setCanCollect(false);
+        this->setCanDrop(true);
+    }
+    else if(c == false){
+        std::cout << "Can recollect";
+        this->setCanCollect(true);
+        this->setCanDrop(false);
+    }
 }
 
 /* **** **** **** **** **** **** **** **** **** **** **** **** **** **** **** **** **** **** **** **** */

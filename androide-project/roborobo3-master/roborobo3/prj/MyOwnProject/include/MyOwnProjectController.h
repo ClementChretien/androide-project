@@ -14,15 +14,24 @@ class RobotWorldModel;
 
 class MyOwnProjectController : public Controller
 {
+	private:
+		bool objCollected;
+		bool canCollect;
+		bool canDrop;
+
 	public:
 		MyOwnProjectController( RobotWorldModel *__wm );
 		~MyOwnProjectController();
     
         std::vector<double> _params;
-		
 		void reset();
 		void step();
-    
+		bool getCanCollect();
+		bool getCanDrop();
+		bool getObjCollected();
+		void setCanCollect(bool c);
+		void setCanDrop(bool c);
+		void setObjCollected(bool c);
         void monitorSensoryInformation();
     
         std::string inspect( std::string prefix = "" );
