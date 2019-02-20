@@ -1,8 +1,9 @@
 /**
  * @author Nicolas Bredeche <nicolas.bredeche@upmc.fr>
  */
-
-
+#define _USE_MATH_DEFINES
+#define OFFSET 0.0
+#define RANGE 0.3
 #include "MyOwnProject/include/MyOwnProjectWorldObserver.h"
 #include "World/World.h"
 #include "World/SquareObject.h"
@@ -28,7 +29,7 @@ MyOwnProjectWorldObserver::~MyOwnProjectWorldObserver()
 
 void MyOwnProjectWorldObserver::initPre()
 {
-    int nbObjectsTotal = 100;
+    int nbObjectsTotal = 50;
 
     for ( int i = 0 ; i < nbObjectsTotal ; i++ )
     {
@@ -39,14 +40,14 @@ void MyOwnProjectWorldObserver::initPre()
         gPhysicalObjects.push_back( object );
         object->setDisplayColor(64,192,255);
         object->setType(1);
-        object->setRegion(0,0.3);
+        object->setRegion(OFFSET,RANGE);
         object->relocate();
     }
 }
 
 void MyOwnProjectWorldObserver::initPost()
 {
-    // nothing to do.
+    
 }
 
 void MyOwnProjectWorldObserver::stepPre()
@@ -56,7 +57,26 @@ void MyOwnProjectWorldObserver::stepPre()
             Robot *robot = (gWorld->getRobot(i));
             MyOwnProjectController *c = dynamic_cast<MyOwnProjectController*>(gWorld->getRobot(i)->getController());
             Point2d p =c->getPosition();
-            if(p.y>400 && p.y < 450){
+            if(c->getCanInstantDrop()==true){
+                c->setObjCollected(false);
+                std::cout << "Drop it";
+                int id = PhysicalObjectFactory::getNextId();
+                MyEnergyItem *object = new MyEnergyItem(id);
+                gPhysicalObjects.push_back( object );
+                object->setDisplayColor(64,192,255);
+                object->setType(1);
+                float ori = c->getOrientation();
+                std::cout << "ge";
+                double objX = p.x - cos(M_PI*ori)*50;
+                double objY = p.y - sin(M_PI*ori)*50;
+                object->relocate(objX,objY,false,OFFSET,RANGE);/*
+                if(ori>0.5){object->relocate(p.x+20,p.x+30,p.y+20,p.y+30);}
+                else if(ori>0){object->relocate(p.x+20,p.x+30,p.y-20,p.y-30);}
+                else if(ori >-0.5){object->relocate(p.x-20,double(p.x-30),p.y-20,double(p.y-30));}
+                else{object->relocate(p.x-20,p.x-30,p.y+20,p.y+30);}
+                */
+            }
+            else  if(p.y>400 && p.y < 450){
                 if(c->getCanDropSlope()==true){
                     std::cout << "\n Can you drop it? ";
                     std::cout << "\nDropped";
@@ -69,7 +89,7 @@ void MyOwnProjectWorldObserver::stepPre()
                     int ymin = 700;
                     int ymax = 730;
                     std::cout << ymin <<" / "<<ymax;
-                    object->relocate(ymin,ymax);
+                    object->relocate(ymin,ymax,true);
                 }
             }
             else if(p.y > 950 && p.y < 1000){
@@ -80,6 +100,13 @@ void MyOwnProjectWorldObserver::stepPre()
                     std::cout << "\nOne Point!";
                     this->addPoint();
                     std::cout << "\nTotal point : " << this->getPoint()<<"\n";
+                    int id = PhysicalObjectFactory::getNextId();
+                    MyEnergyItem *object = new MyEnergyItem(id);
+                    gPhysicalObjects.push_back( object );
+                    object->setDisplayColor(64,192,255);
+                    object->setType(1);
+                    object->setRegion(OFFSET,RANGE);
+                    object->relocate();
                 }
             }
             
@@ -113,7 +140,6 @@ void MyOwnProjectWorldObserver::stepPre()
 
 void MyOwnProjectWorldObserver::stepPost()
 {
-    // nothing to do.
 }
 
 

@@ -39,8 +39,7 @@ void MyEnergyItem::isTouched( int __idAgent )
     //std::cout << (c->getCanCollect());
     if(c->getCanCollect() == true){
         c->setObjCollected(true);
-        std::cout << "Collected";
-        relocate();
+        this->unregisterObject();
     }
     /*else{
         std::cout << "Not Collected";
@@ -53,15 +52,15 @@ void MyEnergyItem::isWalked( int __idAgent )
 {
     //EnergyItem::isWalked(__idAgent);
     MyOwnProjectController *c = dynamic_cast<MyOwnProjectController*>(gWorld->getRobot(__idAgent)->getController());
-    std::cout << "\nBlablabla";
-    std::cout << (c->getCanCollect());
+    //std::cout << "\nBlablabla";
+    //std::cout << (c->getCanCollect());
     if(c->getCanCollect() == true){
         c->setObjCollected(true);
-        std::cout << "Collected";
-        relocate();
+        //std::cout << "Collected";
+        this->unregisterObject();
     }
     else{
-        std::cout << "Not Collected";
+       // std::cout << "Not Collected";
         _visible = true;
     }
 }
@@ -77,10 +76,6 @@ void MyEnergyItem::setRegion( double offset, double range )
     _range = range;
 }
 
-void MyEnergyItem::test()
-{
-    std::cout << "ccccccccccccccccc";
-}
 void MyEnergyItem::relocate()
 {
     // * pick new coordinate
@@ -120,7 +115,94 @@ void MyEnergyItem::relocate()
     
     activeIt=0;
 }
-bool MyEnergyItem::relocate(int ymin, int ymax)
+bool MyEnergyItem::relocate(double ymin, double ymax,bool ecart)
+{
+    // * pick new coordinate
+    
+    unregisterObject();
+    
+    int border = 40;
+    
+    //double pi = atan(1)*4;
+    if(!ecart){
+        setCoordinates(ymin,ymax);
+    }
+    if(ecart || canRegister()== false){
+        
+        do{
+            
+            double yPos;
+            
+            yPos = random01() * (ymax-ymin) + ymin;
+            
+            // with a sigmoid
+            //double value = random01();
+            //xPos = (1/(1 + std::exp(-value*5 + 13)))*3000; // (1/(1 + Exp[-x*5 + 13])*3000) <===
+            //xPos = std::pow(value,3); // x^3   <==
+            //xPos = (1/(1 + std::exp(-value*5 + 5)))*2; // (1/(1 + Exp[-x*5 + 5]))
+            //xPos = 1 - ( 1 / (1 + std::exp( -value * 10 + 5))); // 1 - (1/(1 + Exp[-x*10 + 5]))
+            
+            // with a gaussian
+            //double sigma = 0.2;
+            //double gaussianPeakValue = 1.0 / std::sqrt( 2. * pi * std::pow(sigma,2) );
+            //xPos = sigma*randgaussian() / gaussianPeakValue;
+            
+            double x = random01() * ( gScreenWidth - 2*border );
+            double y = yPos;// * ( gScreenHeight - 2*border ) + border;
+            
+            setCoordinates(x,y);
+            
+        } while ( canRegister() == false );
+    }
+    
+    registerObject();
+    
+    activeIt=0;
+}
+bool MyEnergyItem::relocate(double ymin, double ymax,bool ecart,double offset, double range )
+{
+    // * pick new coordinate
+    
+    unregisterObject();
+    
+    int border = 40;
+    double x,y;
+    double xPos;
+    //double pi = atan(1)*4;
+    if(!ecart){
+        setCoordinates(ymin,ymax);
+    }
+    if(ecart || canRegister()== false){
+        do{
+            
+            
+            xPos = random01() * range + offset;
+            
+            // with a sigmoid
+            //double value = random01();
+            //xPos = (1/(1 + std::exp(-value*5 + 13)))*3000; // (1/(1 + Exp[-x*5 + 13])*3000) <===
+            //xPos = std::pow(value,3); // x^3   <==
+            //xPos = (1/(1 + std::exp(-value*5 + 5)))*2; // (1/(1 + Exp[-x*5 + 5]))
+            //xPos = 1 - ( 1 / (1 + std::exp( -value * 10 + 5))); // 1 - (1/(1 + Exp[-x*10 + 5]))
+            
+            // with a gaussian
+            //double sigma = 0.2;
+            //double gaussianPeakValue = 1.0 / std::sqrt( 2. * pi * std::pow(sigma,2) );
+            //xPos = sigma*randgaussian() / gaussianPeakValue;
+            
+            x = random01() * ( gScreenWidth - 2*border ) + border;
+            y = xPos * ( gScreenHeight - 2*border ) + border;
+            
+            setCoordinates(x,y);
+                
+        } while ( canRegister() == false );
+    }
+    
+    registerObject();
+    
+    activeIt=0;
+}
+bool MyEnergyItem::relocate(double xmin, double xmax, double ymin, double ymax)
 {
     // * pick new coordinate
     
@@ -132,6 +214,10 @@ bool MyEnergyItem::relocate(int ymin, int ymax)
     
     do{
         
+        double xPos;
+        
+        xPos = random01() * (xmax-xmin) + xmin;
+
         double yPos;
         
         yPos = random01() * (ymax-ymin) + ymin;
@@ -148,7 +234,7 @@ bool MyEnergyItem::relocate(int ymin, int ymax)
         //double gaussianPeakValue = 1.0 / std::sqrt( 2. * pi * std::pow(sigma,2) );
         //xPos = sigma*randgaussian() / gaussianPeakValue;
         
-        double x = random01() * ( gScreenWidth - 2*border );
+        double x = xPos;
         double y = yPos;// * ( gScreenHeight - 2*border ) + border;
         
         setCoordinates(x,y);

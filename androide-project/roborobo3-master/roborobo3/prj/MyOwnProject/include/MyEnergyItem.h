@@ -31,7 +31,9 @@ public :
     
     void setRegion( double offset, double range );
     void relocate() override;
-    bool relocate(int ymin, int ymax) override;
+    bool relocate(double ymin, double ymax, bool ecart);
+    bool relocate(double ymin, double ymax, bool ecart, double range, double offset);
+    bool relocate(double xmin, double xmax,double ymin, double ymax);
     void test() ;
 };
 

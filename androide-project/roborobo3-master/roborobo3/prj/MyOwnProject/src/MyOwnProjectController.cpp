@@ -21,6 +21,7 @@ MyOwnProjectController::MyOwnProjectController( RobotWorldModel *__wm ) : Contro
     }
     this->setObjCollected(false);
     this->setCanDropSlope(false);
+    this->setCanInstantDrop(false);
     size_t nbParams = 14;
     _params.resize(nbParams,0); // initialize an array with zero values.
 }
@@ -37,6 +38,8 @@ void MyOwnProjectController::reset()
 
 void MyOwnProjectController::step()
 {
+
+
     // Useful actuator commands:
     //_wm->setRobotLED_colorValues( r,g,b );
     //_wm->_desiredTranslationalValue = translationalSpeed;
@@ -107,7 +110,19 @@ void MyOwnProjectController::step()
     double dist_FFR = getDistanceAt(SENSOR_FFR);
     int objectId = -2;
     bool objDetected = false;
-    objectId = _wm->getObjectIdFromCameraSensor(SENSOR_L);
+
+
+    
+    objectId = _wm->getObjectIdFromCameraSensor(SENSOR_R);
+    if ( PhysicalObject::isInstanceOf(objectId) ){
+
+        if (gVerbose and 1 == gPhysicalObjects[objectId - gPhysicalObjectIndexStartOffset]->getType()){
+            objDetected = true;
+            std::cout << "TYPE 1 R\n";
+            dist_R = 0;
+        }
+    }
+    
     /*if ( PhysicalObject::isInstanceOf(objectId) ){
         if (gVerbose and 1 == gPhysicalObjects[objectId - gPhysicalObjectIndexStartOffset]->getType()){
             gPhysicalObjects[objectId - gPhysicalObjectIndexStartOffset]->relocate();
@@ -194,7 +209,7 @@ void MyOwnProjectController::step()
     //std::cout << _wm->_actualTranslationalValue << "\n";
     //std::cout << _wm->_actualRotationalVelocity << "\n";
 }
-
+//Fonctions de ramassage et dépôt d'objets
 bool MyOwnProjectController::getCanCollect(){
     return this->canCollect;
 }
@@ -203,6 +218,9 @@ bool MyOwnProjectController::getCanDropSlope(){
 }
 bool MyOwnProjectController::getCanDropNest(){
     return this->canDropNest;
+}
+bool MyOwnProjectController::getCanInstantDrop(){
+    return this->instantDrop;
 }
 bool MyOwnProjectController::getObjCollected(){
     return this->objCollected;
@@ -217,6 +235,9 @@ void MyOwnProjectController::setCanDropSlope(bool c){
 void MyOwnProjectController::setCanDropNest(bool c){
     this->canDropNest = c;
 }
+void MyOwnProjectController::setCanInstantDrop(bool c){
+    this->instantDrop = c;
+}
 void MyOwnProjectController::setObjCollected(bool c){
     this->objCollected = c;
     if(c == true){
@@ -224,12 +245,14 @@ void MyOwnProjectController::setObjCollected(bool c){
         this->setCanCollect(false);
         //this->setCanDropSlope(true);
         this->setCanDropNest(true);
+        this->setCanInstantDrop(true);
     }
     else if(c == false){
         std::cout << "Can recollect";
         this->setCanCollect(true);
         //this->setCanDropSlope(false);
         this->setCanDropNest(false);
+        this->setCanInstantDrop(false);
     }
 }
 
