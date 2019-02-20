@@ -1,0 +1,161 @@
+//
+//  MyEnergyItem.cpp
+//  roborobo3
+//
+//  Created by Nicolas Bredeche on 06/12/17.
+//  Copyright © 2017 Nicolas Bredeche. All rights reserved.
+//
+
+#include "MyOwnProject/include/MyEnergyItem.h"
+#include "MyOwnProject/include/MyOwnProjectController.h"
+#include "RoboroboMain/roborobo.h"
+#include "World/World.h"
+#include "WorldModels/RobotWorldModel.h"
+#include "Utilities/Misc.h"
+
+double leftRegionDensity = 0.99;
+
+MyEnergyItem::MyEnergyItem( int __id ) : EnergyItem( __id )
+{
+    
+}
+
+void MyEnergyItem::step()
+{
+    EnergyItem::step();
+ 
+    if ( activeIt == 1000 * 2 ) // relocate after xxx iterations (if not harvested inbetween)
+    {
+        relocate(); // incl. activeIt=0
+        _visible = true;
+    }
+}
+
+void MyEnergyItem::isTouched( int __idAgent )
+{
+    //EnergyItem::isTouched(__idAgent);
+    MyOwnProjectController *c = dynamic_cast<MyOwnProjectController*>(gWorld->getRobot(__idAgent)->getController());
+    //std::cout << "\nTouched!";
+    //std::cout << (c->getCanCollect());
+    if(c->getCanCollect() == true){
+        c->setObjCollected(true);
+        std::cout << "Collected";
+        relocate();
+    }
+    /*else{
+        std::cout << "Not Collected";
+        _visible = true;
+    }*/
+    //std::cout << (c->getCanCollect());
+}
+
+void MyEnergyItem::isWalked( int __idAgent )
+{
+    //EnergyItem::isWalked(__idAgent);
+    MyOwnProjectController *c = dynamic_cast<MyOwnProjectController*>(gWorld->getRobot(__idAgent)->getController());
+    std::cout << "\nBlablabla";
+    std::cout << (c->getCanCollect());
+    if(c->getCanCollect() == true){
+        c->setObjCollected(true);
+        std::cout << "Collected";
+        relocate();
+    }
+    else{
+        std::cout << "Not Collected";
+        _visible = true;
+    }
+}
+
+void MyEnergyItem::isPushed( int __id, std::tuple<double, double> __speed )
+{
+    //EnergyItem::isPushed(__id,__speed);
+}
+
+void MyEnergyItem::setRegion( double offset, double range )
+{
+    _offsetRegion = offset;
+    _range = range;
+}
+
+void MyEnergyItem::test()
+{
+    std::cout << "ccccccccccccccccc";
+}
+void MyEnergyItem::relocate()
+{
+    // * pick new coordinate
+    
+    unregisterObject();
+    
+    int border = 40;
+    
+    //double pi = atan(1)*4;
+    
+    do{
+        
+        double xPos;
+        
+        xPos = random01() * _range + _offsetRegion;
+        
+        // with a sigmoid
+        //double value = random01();
+        //xPos = (1/(1 + std::exp(-value*5 + 13)))*3000; // (1/(1 + Exp[-x*5 + 13])*3000) <===
+        //xPos = std::pow(value,3); // x^3   <==
+        //xPos = (1/(1 + std::exp(-value*5 + 5)))*2; // (1/(1 + Exp[-x*5 + 5]))
+        //xPos = 1 - ( 1 / (1 + std::exp( -value * 10 + 5))); // 1 - (1/(1 + Exp[-x*10 + 5]))
+        
+        // with a gaussian
+        //double sigma = 0.2;
+        //double gaussianPeakValue = 1.0 / std::sqrt( 2. * pi * std::pow(sigma,2) );
+        //xPos = sigma*randgaussian() / gaussianPeakValue;
+        
+        double x = random01() * ( gScreenWidth - 2*border ) + border;
+        double y = xPos * ( gScreenHeight - 2*border ) + border;
+        
+        setCoordinates(x,y);
+        
+    } while ( canRegister() == false );
+    
+    registerObject();
+    
+    activeIt=0;
+}
+bool MyEnergyItem::relocate(int ymin, int ymax)
+{
+    // * pick new coordinate
+    
+    unregisterObject();
+    
+    int border = 40;
+    
+    //double pi = atan(1)*4;
+    
+    do{
+        
+        double yPos;
+        
+        yPos = random01() * (ymax-ymin) + ymin;
+        
+        // with a sigmoid
+        //double value = random01();
+        //xPos = (1/(1 + std::exp(-value*5 + 13)))*3000; // (1/(1 + Exp[-x*5 + 13])*3000) <===
+        //xPos = std::pow(value,3); // x^3   <==
+        //xPos = (1/(1 + std::exp(-value*5 + 5)))*2; // (1/(1 + Exp[-x*5 + 5]))
+        //xPos = 1 - ( 1 / (1 + std::exp( -value * 10 + 5))); // 1 - (1/(1 + Exp[-x*10 + 5]))
+        
+        // with a gaussian
+        //double sigma = 0.2;
+        //double gaussianPeakValue = 1.0 / std::sqrt( 2. * pi * std::pow(sigma,2) );
+        //xPos = sigma*randgaussian() / gaussianPeakValue;
+        
+        double x = random01() * ( gScreenWidth - 2*border );
+        double y = yPos;// * ( gScreenHeight - 2*border ) + border;
+        
+        setCoordinates(x,y);
+        
+    } while ( canRegister() == false );
+    
+    registerObject();
+    
+    activeIt=0;
+}
