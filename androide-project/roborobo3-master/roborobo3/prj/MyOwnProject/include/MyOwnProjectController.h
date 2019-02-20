@@ -17,7 +17,8 @@ class MyOwnProjectController : public Controller
 	private:
 		bool objCollected;
 		bool canCollect;
-		bool canDrop;
+		bool canDropSlope;
+		bool canDropNest;
 
 	public:
 		MyOwnProjectController( RobotWorldModel *__wm );
@@ -27,10 +28,12 @@ class MyOwnProjectController : public Controller
 		void reset();
 		void step();
 		bool getCanCollect();
-		bool getCanDrop();
+		bool getCanDropSlope();
+		bool getCanDropNest();
 		bool getObjCollected();
 		void setCanCollect(bool c);
-		void setCanDrop(bool c);
+		void setCanDropSlope(bool c);
+		void setCanDropNest(bool c);
 		void setObjCollected(bool c);
         void monitorSensoryInformation();
     

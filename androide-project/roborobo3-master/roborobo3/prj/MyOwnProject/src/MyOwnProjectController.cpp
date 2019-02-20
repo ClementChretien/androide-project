@@ -20,7 +20,7 @@ MyOwnProjectController::MyOwnProjectController( RobotWorldModel *__wm ) : Contro
         exit(-1);
     }
     this->setObjCollected(false);
-    
+    this->setCanDropSlope(false);
     size_t nbParams = 14;
     _params.resize(nbParams,0); // initialize an array with zero values.
 }
@@ -108,7 +108,7 @@ void MyOwnProjectController::step()
     int objectId = -2;
     bool objDetected = false;
     objectId = _wm->getObjectIdFromCameraSensor(SENSOR_L);
-    if ( PhysicalObject::isInstanceOf(objectId) ){
+    /*if ( PhysicalObject::isInstanceOf(objectId) ){
         if (gVerbose and 1 == gPhysicalObjects[objectId - gPhysicalObjectIndexStartOffset]->getType()){
             gPhysicalObjects[objectId - gPhysicalObjectIndexStartOffset]->relocate();
             objDetected = true;
@@ -166,10 +166,10 @@ void MyOwnProjectController::step()
             dist_FFR = 0;
         }
     }
-       
+       */ 
 
-    double distanceOnMyLeft = dist_L + dist_FL + dist_FFL;
-    double distanceOnMyRight = dist_R + dist_FR + dist_FFR;
+    double distanceOnMyLeft = getDistanceAt(SENSOR_L) + getDistanceAt(SENSOR_FL) + getDistanceAt(SENSOR_FFL);
+    double distanceOnMyRight = getDistanceAt(SENSOR_R) + getDistanceAt(SENSOR_FR) + getDistanceAt(SENSOR_FFR);
     
     
     double rotationDelta = 0.3;
@@ -198,8 +198,11 @@ void MyOwnProjectController::step()
 bool MyOwnProjectController::getCanCollect(){
     return this->canCollect;
 }
-bool MyOwnProjectController::getCanDrop(){
-    return this->canDrop;
+bool MyOwnProjectController::getCanDropSlope(){
+    return this->canDropSlope;
+}
+bool MyOwnProjectController::getCanDropNest(){
+    return this->canDropNest;
 }
 bool MyOwnProjectController::getObjCollected(){
     return this->objCollected;
@@ -208,20 +211,25 @@ bool MyOwnProjectController::getObjCollected(){
 void MyOwnProjectController::setCanCollect(bool c){
     this->canCollect = c;
 }
-void MyOwnProjectController::setCanDrop(bool c){
-    this->canDrop = c;
+void MyOwnProjectController::setCanDropSlope(bool c){
+    this->canDropSlope = c;
+}
+void MyOwnProjectController::setCanDropNest(bool c){
+    this->canDropNest = c;
 }
 void MyOwnProjectController::setObjCollected(bool c){
     this->objCollected = c;
     if(c == true){
         std::cout << "Can not collect anymore";
         this->setCanCollect(false);
-        this->setCanDrop(true);
+        //this->setCanDropSlope(true);
+        this->setCanDropNest(true);
     }
     else if(c == false){
         std::cout << "Can recollect";
         this->setCanCollect(true);
-        this->setCanDrop(false);
+        //this->setCanDropSlope(false);
+        this->setCanDropNest(false);
     }
 }
 

@@ -13,7 +13,7 @@ class World;
 class MyOwnProjectWorldObserver : public WorldObserver
 {
 	protected:
-		
+		int pointCount;
 	public:
 		MyOwnProjectWorldObserver( World *__world );
 		~MyOwnProjectWorldObserver();
@@ -23,6 +23,10 @@ class MyOwnProjectWorldObserver : public WorldObserver
 
         void stepPre();
         void stepPost();
+		
+		void addPoint();
+		void addPoint(int p);
+		int getPoint();
 		
 };
 

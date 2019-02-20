@@ -18,6 +18,7 @@
 MyOwnProjectWorldObserver::MyOwnProjectWorldObserver( World *__world ) : WorldObserver( __world )
 {
 	_world = __world;
+    this->pointCount = 0;
 }
 
 MyOwnProjectWorldObserver::~MyOwnProjectWorldObserver()
@@ -55,9 +56,8 @@ void MyOwnProjectWorldObserver::stepPre()
             Robot *robot = (gWorld->getRobot(i));
             MyOwnProjectController *c = dynamic_cast<MyOwnProjectController*>(gWorld->getRobot(i)->getController());
             Point2d p =c->getPosition();
-            
-            if(p.y > 400 && p.y < 450){
-                if(c->getCanDrop()==true){
+            if(p.y>400 && p.y < 450){
+                if(c->getCanDropSlope()==true){
                     std::cout << "\n Can you drop it? ";
                     std::cout << "\nDropped";
                     c->setObjCollected(false);
@@ -71,7 +71,15 @@ void MyOwnProjectWorldObserver::stepPre()
                     std::cout << ymin <<" / "<<ymax;
                     object->relocate(ymin,ymax);
                 }
-                else{
+            }
+            else if(p.y > 950 && p.y < 1000){
+                if(c->getCanDropNest()==true){
+                    c->setObjCollected(false);
+                    std::cout << "\n Can you drop it? ";
+                    std::cout << "\nDropped";
+                    std::cout << "\nOne Point!";
+                    this->addPoint();
+                    std::cout << "\nTotal point : " << this->getPoint()<<"\n";
                 }
             }
             
@@ -106,4 +114,19 @@ void MyOwnProjectWorldObserver::stepPre()
 void MyOwnProjectWorldObserver::stepPost()
 {
     // nothing to do.
+}
+
+
+//Mes fonctions
+
+
+
+void MyOwnProjectWorldObserver::addPoint(){
+    this->addPoint(1);
+}
+void MyOwnProjectWorldObserver::addPoint(int p){
+    this->pointCount=this->pointCount +p;
+}
+int MyOwnProjectWorldObserver::getPoint(){
+    return this->pointCount;
 }
