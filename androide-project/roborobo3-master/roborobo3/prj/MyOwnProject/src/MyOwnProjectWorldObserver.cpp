@@ -2,8 +2,14 @@
  * @author Nicolas Bredeche <nicolas.bredeche@upmc.fr>
  */
 #define _USE_MATH_DEFINES
+//Variables globales
 #define OFFSET 0.0
 #define RANGE 0.3
+//Zone de jeu
+int rampeYMin=400;
+int rampeYMax=700;
+int nestYMin=950;
+int nestYMax=1000;
 #include "MyOwnProject/include/MyOwnProjectWorldObserver.h"
 #include "World/World.h"
 #include "World/SquareObject.h"
@@ -57,6 +63,9 @@ void MyOwnProjectWorldObserver::stepPre()
             Robot *robot = (gWorld->getRobot(i));
             MyOwnProjectController *c = dynamic_cast<MyOwnProjectController*>(gWorld->getRobot(i)->getController());
             Point2d p =c->getPosition();
+            if(p.y>rampeYMin && p.y < rampeYMax && c->getObjCollected()){
+                c->setCanInstantDrop(true);
+            }
             if(c->getCanInstantDrop()==true){
                 c->setObjCollected(false);
                 std::cout << "Drop it";
@@ -66,17 +75,18 @@ void MyOwnProjectWorldObserver::stepPre()
                 object->setDisplayColor(64,192,255);
                 object->setType(1);
                 float ori = c->getOrientation();
-                std::cout << "ge";
-                double objX = p.x - cos(M_PI*ori)*50;
-                double objY = p.y - sin(M_PI*ori)*50;
-                object->relocate(objX,objY,false,OFFSET,RANGE);/*
-                if(ori>0.5){object->relocate(p.x+20,p.x+30,p.y+20,p.y+30);}
-                else if(ori>0){object->relocate(p.x+20,p.x+30,p.y-20,p.y-30);}
-                else if(ori >-0.5){object->relocate(p.x-20,double(p.x-30),p.y-20,double(p.y-30));}
-                else{object->relocate(p.x-20,p.x-30,p.y+20,p.y+30);}
-                */
-            }
-            else  if(p.y>400 && p.y < 450){
+                if(p.y>rampeYMin && p.y < rampeYMax){
+                    int ymin = 700;
+                    int ymax = 730;
+                    object->relocate(ymin,ymax,true);
+                }else{                    
+                    std::cout << "ge";
+                    double objX = p.x - cos(M_PI*ori)*50;
+                    double objY = p.y - sin(M_PI*ori)*50;
+                    object->relocate(objX,objY,false,OFFSET,RANGE);
+                }
+            }/*
+            else if(p.y>400 && p.y < 450){
                 if(c->getCanDropSlope()==true){
                     std::cout << "\n Can you drop it? ";
                     std::cout << "\nDropped";
@@ -108,7 +118,7 @@ void MyOwnProjectWorldObserver::stepPre()
                     object->setRegion(OFFSET,RANGE);
                     object->relocate();
                 }
-            }
+            }*/
             
         }
     // The following code shows an example where every 100 iterations, robots are re-located to their initial positions, and parameters are randomly changed.
