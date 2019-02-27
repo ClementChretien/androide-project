@@ -72,7 +72,6 @@ void MyOwnProjectWorldObserver::stepPre()
     for ( int i = 0 ; i != gWorld->getNbOfRobots() ; i++ )
     {
         //std::cout << "Drop analyse :" << i<<"\n";
-        Robot *robot = (gWorld->getRobot(i));
         MyOwnProjectController *c = dynamic_cast<MyOwnProjectController*>(gWorld->getRobot(i)->getController());
         Point2d p =c->getPosition();
         //std::cout << "2 Drop analyse :" << i<<"\n";
@@ -86,15 +85,13 @@ void MyOwnProjectWorldObserver::stepPre()
             object->setType(1);
             float ori = c->getOrientation();
             std::cout << "One point ! #########################################################\n";
-                
+             /*   
             if(p.y>rampeYMin && p.y < rampeYMax){
                 int ymin = 700;
                 int ymax = 730;
                 object->relocate(ymin,ymax,true);
             }else if(p.y>nestYMin && p.y < nestYMax)
             {                    
-                double objX = p.x - cos(M_PI*ori)*50;
-                double objY = p.y - sin(M_PI*ori)*50;
                 std::cout << "One point ! #########################################################\n";
                 object->setRegion(OFFSET,RANGE);    
                 object->relocate();
@@ -103,7 +100,7 @@ void MyOwnProjectWorldObserver::stepPre()
                 double objY = p.y - sin(M_PI*ori)*50;
                 object->relocate(objX,objY,false,OFFSET,RANGE);
             }
-            std::cout << "End\n";
+            std::cout << "End\n";*/
         }
         
     }
@@ -112,9 +109,7 @@ void MyOwnProjectWorldObserver::stepPre()
     // REMOVE OR COMMENT THE FOLLOWING TO AVOID RESETTING POSITIONS EVERY 100 ITERATIONS
     //
 
-    //std::cout << "Avant analyse pop :" << ( gWorld->getIterations() % 1000 == 0 )<<"\n";
-    int nbIterPerGen = 100;
-    bool end = true;
+    
     //Reset
     std::cout << gWorld->getIterations() % 2500<<"\n";
     if ( gWorld->getIterations() % 2500 == 0 )
@@ -151,10 +146,10 @@ void MyOwnProjectWorldObserver::stepPre()
             //std::cout << "Reset Robot Done\n";
         }
         this->initObjects();
-        for (int i = 0 ; i != 5 ; i++){
+        /*for (int i = 0 ; i != 5 ; i++){
             MyOwnProjectController *controller = ((MyOwnProjectController*)(gWorld->getRobot(i)->getController()));
-            //std::cout << controller->getCanInstantDrop() << ": Object Collected\n";
-        }
+            std::cout << controller->getCanInstantDrop() << ": Object Collected\n";
+        }*/
         
     }
     std::cout << "bbbbbbbbbbbbbbbbbbbbbbbbbb\n";
@@ -190,9 +185,6 @@ void MyOwnProjectWorldObserver::analyseSpecie(int iSpecie){
 void MyOwnProjectWorldObserver::initAgents(int nbAgent,Specie p){
     for ( int i = 0 ; i !=nbAgent ; i++ )
     {
-        Robot *robot = (gWorld->getRobot(i));
-        
-        
         MyOwnProjectController *controller = ((MyOwnProjectController*)(gWorld->getRobot(i)->getController()));
         
         controller->setGenome(p.getAgent(i));
