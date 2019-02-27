@@ -19,17 +19,16 @@ MyOwnProjectController::MyOwnProjectController( RobotWorldModel *__wm ) : Contro
         std::cerr << "[CRITICAL] This project assumes robot specifications with " << NB_SENSORS << " sensors (provided: " << _wm->_cameraSensorsNb << " sensors). STOP.\n";
         exit(-1);
     }
-    this->setObjCollected(false);
-    this->setCanDropSlope(false);
-    this->setCanInstantDrop(false);
-    double genome[24]={0.5,1,-1,-1,-1,-1,-1,-1,-1,1,1,1,1,1,1,1,0,1,1,1,400,700,950,1000};
-    for (int i = 0; i < 19 ; i++){
-        genome[i] = random01()*2-1;
-    }
+    init();
+    std::vector<float> genome{0.5,1,-1,-1,-1,-1,-1,-1,-1,1,1,1,1,1,1,1,0,1,1,1,400,700,950,1000};
+    this->genome = genome;
     size_t nbParams = 14;
     _params.resize(nbParams,0); // initialize an array with zero values.
 }
-
+void MyOwnProjectController::init(){
+    this->setObjCollected(false);
+    this->setCanInstantDrop(false);
+}
 MyOwnProjectController::~MyOwnProjectController()
 {
 	// nothing to do.
@@ -39,110 +38,25 @@ void MyOwnProjectController::reset()
 {
 	// nothing to do.
 }
-/*Old Step
-void MyOwnProjectController::step()
-{
 
-
-    Point2d p = getPosition(); 
-    double normalT = sin( ( ( getDistanceAt(SENSOR_FFL) + getDistanceAt(SENSOR_FFR) ) / 2.0 )* M_PI / 2.0);
-    if (normalT > 0.2)
-        normalT -= 0.2;
-    else if (normalT < -0.2)
-        normalT += 0.2;
-        
-    double maxRampSpeed = 0.3;
-    double minRampSpeed = -0.3;
-    double orientation = getOrientation();
-
-    if (p.y > 450&& p.y < 700 && orientation < 0.0){
-        if(normalT > maxRampSpeed)
-            setTranslation(maxRampSpeed);
-        else if (normalT < minRampSpeed)
-            setTranslation(minRampSpeed);
-        else
-            setTranslation(normalT);     
-    }
-    else if (p.y > 450 && p.y < 700 && orientation >= 0.0){
-            if (normalT <= 0.9)
-                normalT += 0.2;
-            else if (normalT >= -0.9)
-                normalT -= 0.2;
-            setTranslation(normalT);     
-    }
-    else{
-        setTranslation(normalT);
-    }
-    
-    
-    double dist_L = getDistanceAt(SENSOR_L);
-    double dist_FL = getDistanceAt(SENSOR_FL);
-    double dist_FFL = getDistanceAt(SENSOR_FFL);
-    double dist_R = getDistanceAt(SENSOR_R);
-    double dist_FR = getDistanceAt(SENSOR_FR);
-    double dist_FFR = getDistanceAt(SENSOR_FFR);
-    int objectId = -2;
-    bool objDetected = false;
-
-
-    
-    objectId = _wm->getObjectIdFromCameraSensor(SENSOR_R);
-    if ( PhysicalObject::isInstanceOf(objectId) ){
-
-        if (gVerbose and 1 == gPhysicalObjects[objectId - gPhysicalObjectIndexStartOffset]->getType()){
-            objDetected = true;
-            std::cout << "TYPE 1 R\n";
-            dist_R = 0;
-        }
-    }
-
-    double distanceOnMyLeft = getDistanceAt(SENSOR_L) + getDistanceAt(SENSOR_FL) + getDistanceAt(SENSOR_FFL);
-    double distanceOnMyRight = getDistanceAt(SENSOR_R) + getDistanceAt(SENSOR_FR) + getDistanceAt(SENSOR_FFR);
-    
-    
-    double rotationDelta = 0.3;
-    double noiseAmplitude = 0.01;
-    if(!objDetected){
-            
-        if ( distanceOnMyLeft < distanceOnMyRight )
-            setRotation( +rotationDelta );
-        else if ( distanceOnMyRight < distanceOnMyLeft )
-            setRotation( -rotationDelta );
-        else
-            //setRotation( 0.1 - (double)(random01()*0.2));
-            setRotation( noiseAmplitude * ( 1.0 - (double)(random01()*2.0) ) );    
-        
-    }
-    else{
-        //setRotation()
-    }
-    
-    //monitorSensoryInformation();
-    //std::cout << inspect("TEST ");
-    //std::cout << _wm->_actualTranslationalValue << "\n";
-    //std::cout << _wm->_actualRotationalVelocity << "\n";
-}*/
 
 //AG step
 void MyOwnProjectController::step(){
-    std::cout << "\ntest\n";
-    for(int i = 0; i < 24; i++){
-        std::cout << genome[i]<<":";
-    }
+    std::cout << "bla\n";
     double t = calculateTranslation();
+    t = std::min(t,1.);
+    t = std::max(t,-1.);
     setTranslation(t);
-    std::cout <<"\nTranslation : " << t<<"\n";
+    //std::cout <<"\nTranslation : " << t<<"\n";
     //setTranslation(calculateTranslation());
     t = calculateRotation();
+    t = std::min(t,1.);
+    t = std::max(t,-1.);
     setRotation(t);
-    std::cout << "\nRotation :" << t<<"\n";
-    std::cout << "\nDrop : "<<calculateDrop()<<"\n";
-    std::cout << "\ntest4\n";
-    /*for(int i = 0; i < 24; i++){
-        std::cout << genomegggg[i]<<":";
-    }*/
-    std::cout << "\n";
-    
+    //std::cout << "\nRotation :" << t<<"\n";
+    //std::cout << "\nDrop : "<<calculateDrop()<<"\n";
+    calculateDrop();
+    std::cout << "blabla\n";
 }
 //Fonctions de ramassage et dépôt d'objets
 bool MyOwnProjectController::getCanCollect(){
@@ -176,14 +90,14 @@ void MyOwnProjectController::setCanInstantDrop(bool c){
 void MyOwnProjectController::setObjCollected(bool c){
     this->objCollected = c;
     if(c == true){
-        std::cout << "Can not collect anymore";
+        //std::cout << "Can not collect anymore\n";
         this->setCanCollect(false);
         //this->setCanDropSlope(true);
         //this->setCanDropNest(true);
         //this->setCanInstantDrop(true);
     }
     else if(c == false){
-        std::cout << "Can recollect";
+        //std::cout << "Can recollect\n";
         this->setCanCollect(true);
         //this->setCanDropSlope(false);
         //this->setCanDropNest(false);
@@ -213,60 +127,60 @@ nestMax
 0                      1         2   3   4   5   6   7   8   9   10   11  12  13 14  15   16            17          18   19  20       21       22     23
 */
 //Fonctions
-void MyOwnProjectController::setGenome(double *g){
+void MyOwnProjectController::setGenome(std::vector<float> g){
     for (int i = 0 ; i< 24 ; i++){
-        genome[i]=g[i];
+        //std::cout << i << g.size()<<"\n";
+        this->genome[i]=g[i];
     }
 }
-double* MyOwnProjectController::getGenome(){
+std::vector<float> MyOwnProjectController::getGenome(){
     return this->genome;
 }
 
 double MyOwnProjectController::calculateRotation(){
-    //double genome[24]={-1,-1,-1,-1,-1,-1,-1,0.01,1,1,1,1,1,1,1,0.5,0,1,1,1,400,700,950,1000};
     double calcul = 0;
-    calcul = calcul+genome[1];
+    calcul = calcul+this->genome[1];
     double dist_L = getDistanceAt(SENSOR_L);
     if(getObjectAt(SENSOR_L)==1){
-        calcul = calcul+genome[2]*dist_L;
+        calcul = calcul+this->genome[2]*dist_L;
     }
     if(getWallAt(SENSOR_L)==1){
-        calcul = calcul+genome[8+0]*dist_L;
+        calcul = calcul+this->genome[8+0]*dist_L;
     }
     double dist_FL = getDistanceAt(SENSOR_FL);
     if(getObjectAt(SENSOR_FL)==1){
-        calcul = calcul+genome[3]*dist_FL;
+        calcul = calcul+this->genome[3]*dist_FL;
     }
     if(getWallAt(SENSOR_FL)==1){
-        calcul = calcul+genome[8+1]*dist_FL;
+        calcul = calcul+this->genome[8+1]*dist_FL;
     }
     double dist_FFL = getDistanceAt(SENSOR_FFL);
     if(getObjectAt(SENSOR_FFL)==1){
-        calcul = calcul+genome[4]*dist_FFL;
+        calcul = calcul+this->genome[4]*dist_FFL;
     }
     if(getWallAt(SENSOR_FFL)==1){
-        calcul = calcul+genome[8+2]*dist_FFL;
+        calcul = calcul+this->genome[8+2]*dist_FFL;
     }
     double dist_R = getDistanceAt(SENSOR_R);
     if(getObjectAt(SENSOR_R)==1){
-        calcul = calcul+genome[6]*dist_R;
+        calcul = calcul+this->genome[6]*dist_R;
     }
     if(getWallAt(SENSOR_R)==1){
-        calcul = calcul+genome[8+4]*dist_R;
+        calcul = calcul+this->genome[8+4]*dist_R;
     }
     double dist_FR = getDistanceAt(SENSOR_FR);
     if(getObjectAt(SENSOR_FR)==1){
-        calcul = calcul+genome[7]*dist_FR;
+        calcul = calcul+this->genome[7]*dist_FR;
     }
     if(getWallAt(SENSOR_FR)==1){
-        calcul = calcul+genome[8+5]*dist_FR;
+        calcul = calcul+this->genome[8+5]*dist_FR;
     }
     double dist_FFR = getDistanceAt(SENSOR_FFR);
     if(getObjectAt(SENSOR_FFR)==1){
-        calcul = calcul+genome[8]*dist_FFR;
+        calcul = calcul+this->genome[8]*dist_FFR;
     }
     if(getWallAt(SENSOR_FFR)==1){
-        calcul = calcul+genome[8+6]*dist_FFR;
+        calcul = calcul+this->genome[8+6]*dist_FFR;
     }
     return calcul;
 }
@@ -274,29 +188,34 @@ double MyOwnProjectController::calculateRotation(){
 double MyOwnProjectController::calculateTranslation(){
     //double genome[24]={-1,-1,-1,-1,-1,-1,-1,0.01,1,1,1,1,1,1,1,0.5,0,1,1,1,400,700,950,1000};
     double calcul = 0;
-    calcul = calcul + genome[0];
+    calcul = calcul + this->genome[0];
     double dist_F = getDistanceAt(SENSOR_F);
     if(getObjectAt(SENSOR_F)==1){
-        calcul = calcul+genome[3]*dist_F;
+        calcul = calcul+this->genome[3]*dist_F;
     }
     if(getWallAt(SENSOR_F)==1){
-        calcul = calcul+genome[8+3]*dist_F;
+        calcul = calcul+this->genome[8+3]*dist_F;
     }
     return calcul;
 }
 double MyOwnProjectController::calculateDrop(){
-    double genome[24]={-1,-1,-1,-1,-1,-1,-1,0.01,1,1,1,1,1,1,1,0.5,0,1,1,1,400,700,950,1000};
     //Slope
-    if(this->getPosition().y<genome[21] && this->getPosition().y>genome[20] && random01()<genome[16] && this->getObjCollected()==true){
-        this->setCanInstantDrop(true);
-        return 1;
-    }
-    //Nest
-    if(this->getPosition().y<genome[23] && this->getPosition().y>genome[22] && random01()<genome[17] && this->getObjCollected()==true){
+    if(this->getObjCollected()== true){
         this->setCanInstantDrop(true);
         return 1;
     }
     return 0;
+    /*
+    if(this->getPosition().y<this->genome[21] && this->getPosition().y>this->genome[20] && random01()<this->genome[16] && this->getObjCollected()==true){
+        this->setCanInstantDrop(true);
+        return 1;
+    }
+    //Nest
+    if(this->getPosition().y<this->genome[23] && this->getPosition().y>this->genome[22] && random01()<this->genome[17] && this->getObjCollected()==true){
+        this->setCanInstantDrop(true);
+        return 1;
+    }
+    return 0;*/
 }
 
 /* **** **** **** **** **** **** **** **** **** **** **** **** **** **** **** **** **** **** **** **** */

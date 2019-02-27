@@ -39,7 +39,9 @@ void MyEnergyItem::isTouched( int __idAgent )
     //std::cout << (c->getCanCollect());
     if(c->getCanCollect() == true){
         c->setObjCollected(true);
-        this->unregisterObject();
+        //std::cout << "Collected\n";
+        this->relocate();
+        //this->unregisterObject();
     }
     /*else{
         std::cout << "Not Collected";
@@ -50,19 +52,19 @@ void MyEnergyItem::isTouched( int __idAgent )
 
 void MyEnergyItem::isWalked( int __idAgent )
 {
-    //EnergyItem::isWalked(__idAgent);
+    /*//EnergyItem::isWalked(__idAgent);
     MyOwnProjectController *c = dynamic_cast<MyOwnProjectController*>(gWorld->getRobot(__idAgent)->getController());
     //std::cout << "\nBlablabla";
     //std::cout << (c->getCanCollect());
     if(c->getCanCollect() == true){
         c->setObjCollected(true);
-        //std::cout << "Collected";
+        std::cout << "Collected";
         this->unregisterObject();
     }
     else{
        // std::cout << "Not Collected";
         _visible = true;
-    }
+    }*/
 }
 
 void MyEnergyItem::isPushed( int __id, std::tuple<double, double> __speed )
