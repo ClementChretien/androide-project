@@ -4,6 +4,8 @@
 
 
 
+#include <list>
+using namespace std; 
 #include <vector>
 #include "Controllers/Controller.h"
 #include "RoboroboMain/common.h"
@@ -11,33 +13,21 @@
 
 class Specie
 {
-	
-    //
-
     private: 
-        int nbAgent;
         int genSize;
-        int isPosMin;
-        int isPosMax;
         int fitness;
-        std::vector<Genome> pop;
+        Genome pop;
         std::string name;
 	
     public : 
-        Specie(int nbAgent, int genSize,int isPosMin,int isPosMax);
+        Specie(int genSize);
         void initPop(std::string name);
         void initAgent(int ag);
-        void setAgent(std::vector<float> g,int iAgent);
-        std::vector<float> getAgent(int iAgent);
-        void setNucleotideAgent(int iAgent, int iNucleo, float value);
-        void setNbAgent(int nb);
-        int getNbAgent();
+        void setGenome(std::vector<float> g);
+        std::vector<float> getAgent();
+        void setNucleo(int iNucleo, float value);
         void setGenSize(int size);
         int getGenSize();
-        void setPosMin(int p);
-        int getPosMin();
-        void setPosMax(int p);
-        int getPosMax();
         void setFitness(int v);
         int getFitness();
         void setName(std::string name);

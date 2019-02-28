@@ -1,0 +1,6 @@
+A faire
+Reseau de neurone (multi couche) definir zone 0/1/2/3
+Transforme Specie en Clonale Taille génome : (Taille x * taille couche 1 + taille couche 1 * taille couche 2 + ...) * 3
+Adapter Création genome/robot en fonction reseau neurone
+Ajouter fonction d'evaluation pour : complet / en haut /en bas
+

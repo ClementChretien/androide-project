@@ -39,9 +39,10 @@ class MyOwnProjectWorldObserver : public WorldObserver
 
 		void initAgents(int nbAgent,Specie p);
 
-        std::vector<Specie> selectionTournoi(std::vector<Specie> s,int nbAgent,std::vector<Specie> newS);
-        std::vector<Specie> ajouterCroisement(std::vector<Specie> s,std::vector<Specie> newS,int iMin,int iMax);
+        std::vector<Specie> selectionTournoi(std::vector<Specie> s,std::vector<Specie> newS);
+        //std::vector<Specie> ajouterCroisement(std::vector<Specie> s,std::vector<Specie> newS,int iMin,int iMax);
         std::vector<Specie> remplirRandom(std::vector<Specie> newS,int iMin);
+		std::vector<Specie> mutation(std::vector<Specie> newS);
     	void initObjects();
 		void analyseSpecie(int specie);
 		

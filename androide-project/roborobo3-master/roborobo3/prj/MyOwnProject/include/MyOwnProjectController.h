@@ -3,13 +3,14 @@
  */
 
 
-
-#ifndef MYOWNPROJECTCONTROLLER_H
-#define MYOWNPROJECTCONTROLLER_H
 #include <vector>
+using namespace std; 
 #include "Controllers/Controller.h"
 #include "RoboroboMain/common.h"
 #include "MyOwnProject/include/Genome.h"
+
+#ifndef MYOWNPROJECTCONTROLLER_H
+#define MYOWNPROJECTCONTROLLER_H
 
 class RobotWorldModel;
 
@@ -24,6 +25,7 @@ class MyOwnProjectController : public Controller
 		bool canDropNest;//Est ce que le robot peux deposer un objet dans la zone de depot final
 		bool instantDrop;//Pour l'activation du dépot automatique
 		std::vector<float> genome;
+    	std::vector<int> layers;
 	
 	public:
 		MyOwnProjectController( RobotWorldModel *__wm );
@@ -46,6 +48,8 @@ class MyOwnProjectController : public Controller
         void monitorSensoryInformation();
 
 		//AG
+		vector<float> definirEntree();
+		vector<float> calculateSortie(vector<float>);
 		std::vector<float> getGenome();
 		void setGenome(std::vector<float> g);
 		double calculateRotation();

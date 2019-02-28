@@ -8,6 +8,8 @@ int rampeYMin=400;
 int rampeYMax=700;
 int nestYMin=950;
 int nestYMax=1000;
+#include <vector>
+using namespace std; 
 #include "MyOwnProject/include/MyOwnProjectWorldObserver.h"
 #include "World/World.h"
 #include "World/SquareObject.h"
@@ -27,13 +29,12 @@ MyOwnProjectWorldObserver::MyOwnProjectWorldObserver( World *__world ) : WorldOb
     this->nbAgent = 5;
     this->nbPop = 10;
     this->popEtu = 0;
-    this->genSize = 24;
+    this->genSize = 17*3;
     this->generation=0;
     this->cptName=0;
-    std::vector<Specie> s(this->nbPop,Specie(this->nbAgent,this->genSize,19,this->genSize));
+    std::vector<Specie> s(this->nbPop,Specie(this->genSize));
     this->s = s;
     for (int p = 0 ; p < this->nbPop ; p++){
-        //this->s[p] = new Specie(nbAgent,genSize,19,genSize);
         this->s[p].initPop("Pop"+std::to_string(p));
         this->cptName++;
     }
@@ -125,9 +126,10 @@ void MyOwnProjectWorldObserver::stepPre()
             std::cout << "Evolution de populations";
             this->popEtu = 0;
             //Séléctions
-            std::vector<Specie> newS(this->nbPop,Specie(this->nbAgent,this->genSize,19,this->genSize));
-            newS = this->selectionTournoi(this->s,0.8,newS);
-            newS = this->ajouterCroisement(this->s,newS,this->nbPop*0.8,this->nbPop);
+            std::vector<Specie> newS(this->nbPop,Specie(this->genSize));
+            newS = this->selectionTournoi(this->s,newS);
+            newS = this->selectionTournoi(this->s,newS);
+            //newS = this->ajouterCroisement(this->s,newS,this->nbPop*0.8,this->nbPop);
             //Mutation
             this->s=newS;
         }
@@ -139,7 +141,7 @@ void MyOwnProjectWorldObserver::stepPre()
             
             MyOwnProjectController *controller = ((MyOwnProjectController*)(gWorld->getRobot(i)->getController()));
              
-            std::vector<float> ga = this->s[i].getAgent(i);
+            std::vector<float> ga = this->s[i].getAgent();
             controller->setGenome(ga);
             controller->init();
             //std::cout << "Reset Robot Done\n";
@@ -185,23 +187,34 @@ void MyOwnProjectWorldObserver::initAgents(int nbAgent,Specie p){
     {
         MyOwnProjectController *controller = ((MyOwnProjectController*)(gWorld->getRobot(i)->getController()));
         
-        controller->setGenome(p.getAgent(i));
+        controller->setGenome(p.getAgent());
     }
 }
 
 
-std::vector<Specie> MyOwnProjectWorldObserver::selectionTournoi(std::vector<Specie> s,int pourcentage,std::vector<Specie> newS){
+std::vector<Specie> MyOwnProjectWorldObserver::selectionTournoi(std::vector<Specie> s,std::vector<Specie> newS){
     //Prendre x pop et selectionner juste le meilleur
-    std::list <Specie> toAdd;
-    for( int i = 0 ; i < s.size()*pourcentage ; i++){
-        toAdd.push_back(s[int(random01()*s.size())])
+    int tailleRec=  s.size()/10+1;
+    std::vector<int> toAdd;
+    for( int i = 0 ; i < s.size() ; i++){
+        toAdd.resize(0);
+        while(toAdd.size()<tailleRec){
+            toAdd.push_back(int(random01()*s.size()));
+        }
+        int iMin = -1;
+        int vMin = -1;
+        for (int j = 0 ; j < toAdd.size() ; j++){
+            if(vMin == -1||s[j].getFitness()> vMin){
+                iMin = j;
+                vMin = s[j].getFitness();
+            }
+        }
         
-        newS[i]=s[i1];
-        newS[i+1]=s[i2];
+        newS[i]=s[iMin];
     }
     return newS;
 }
-std::vector<Specie> MyOwnProjectWorldObserver::ajouterCroisement(std::vector<Specie> s,std::vector<Specie> newS,int iMin,int iMax){
+/*std::vector<Specie> MyOwnProjectWorldObserver::ajouterCroisement(std::vector<Specie> s,std::vector<Specie> newS,int iMin,int iMax){
     //Prendre x pop et selectionner juste 2
     for( int i = iMin ; i < iMax ; i++){
         std::cout << i<<"\n";
@@ -212,20 +225,29 @@ std::vector<Specie> MyOwnProjectWorldObserver::ajouterCroisement(std::vector<Spe
         }while(p1==p2);
         for(int j = 0 ; j < s[p1].getNbAgent() ; j ++){
             if(j < j/2){
-                newS[i].setAgent(s[p1].getAgent(j),j);
+                newS[i].setAgent(s[p1].getAgent());
             }else{
-                newS[i].setAgent(s[p2].getAgent(j),j);
+                newS[i].setAgent(s[p2].getAgent());
             }
         }
         this->cptName++;
         newS[i].setName("PopC"+std::to_string(this->cptName));
     }
     return newS;
-}
+}*/
 std::vector<Specie> MyOwnProjectWorldObserver::remplirRandom(std::vector<Specie> newS,int iMin){
     for(int i = iMin ; i < newS.size() ; i++){
-        newS[i]=Specie(this->nbAgent,this->genSize,19,this->genSize);
+        newS[i]=Specie(this->genSize);
         newS[i].setName("Pop"+std::to_string(i));
+    }
+    return newS;
+}
+std::vector<Specie> MyOwnProjectWorldObserver::mutation(std::vector<Specie> newS){
+    for(int i = 0 ; i < newS.size() ; i++){
+        for(int j = 0 ; j <3 ; j++){
+            int r = newS[0].getGenSize()*random01();
+            newS[i].setNucleo(r,random01()*2-1);
+        }
     }
     return newS;
 }
