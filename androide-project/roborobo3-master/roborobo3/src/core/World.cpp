@@ -177,7 +177,6 @@ void World::updateWorld(const Uint8 *__keyboardStates)
 
     
     // * update physical object, if any (in random order)
-    
     int shuffledObjectIndex[gNbOfPhysicalObjects];
     for ( int i = 0 ; i < gNbOfPhysicalObjects ; i++ )
         shuffledObjectIndex[i] = i;
@@ -207,7 +206,6 @@ void World::updateWorld(const Uint8 *__keyboardStates)
     
     std::shuffle(&shuffledRobotIndex[0], &shuffledRobotIndex[gNbOfRobots],engine);
     //std::random_shuffle(&shuffledRobotIndex[0], &shuffledRobotIndex[gNbOfRobots]); // [!n] remove after 2018-5-1 - random_shuffle was not seeded, and uses rand() - thanks Amine.
-    
     
     
 	// update agent level observers
@@ -257,7 +255,6 @@ void World::updateWorld(const Uint8 *__keyboardStates)
     gLogManager->flush();
     
 	_iterations++;
-
 }
 
 

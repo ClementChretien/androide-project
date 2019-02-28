@@ -40,8 +40,9 @@ void MyEnergyItem::isTouched( int __idAgent )
     if(c->getCanCollect() == true){
         c->setObjCollected(true);
         //std::cout << "Collected\n";
+        this->setRegion(0.0,0.3);
         this->relocate();
-        //this->unregisterObject();
+        this->unregisterObject();
     }
     /*else{
         std::cout << "Not Collected";
@@ -54,7 +55,6 @@ void MyEnergyItem::isWalked( int __idAgent )
 {
     /*//EnergyItem::isWalked(__idAgent);
     MyOwnProjectController *c = dynamic_cast<MyOwnProjectController*>(gWorld->getRobot(__idAgent)->getController());
-    //std::cout << "\nBlablabla";
     //std::cout << (c->getCanCollect());
     if(c->getCanCollect() == true){
         c->setObjCollected(true);
@@ -74,8 +74,8 @@ void MyEnergyItem::isPushed( int __id, std::tuple<double, double> __speed )
 
 void MyEnergyItem::setRegion( double offset, double range )
 {
-    _offsetRegion = offset;
-    _range = range;
+    this->_offsetRegion = offset;
+    this->_range = range;
 }
 
 void MyEnergyItem::relocate()
@@ -92,7 +92,7 @@ void MyEnergyItem::relocate()
         
         double xPos;
         
-        xPos = random01() * _range + _offsetRegion;
+        xPos = random01() * this->_range + this->_offsetRegion;
         
         // with a sigmoid
         //double value = random01();
@@ -108,8 +108,10 @@ void MyEnergyItem::relocate()
         
         double x = random01() * ( gScreenWidth - 2*border ) + border;
         double y = xPos * ( gScreenHeight - 2*border ) + border;
-        
         setCoordinates(x,y);
+        if(y>500){
+            std::cout <<"Pb";
+        }
         
     } while ( canRegister() == false );
     

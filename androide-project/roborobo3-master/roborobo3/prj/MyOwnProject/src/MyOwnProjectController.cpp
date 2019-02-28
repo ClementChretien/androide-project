@@ -42,11 +42,32 @@ void MyOwnProjectController::reset()
 
 //AG step
 void MyOwnProjectController::step(){
-    std::cout << "bla\n";
     double t = calculateTranslation();
     t = std::min(t,1.);
     t = std::max(t,-1.);
-    setTranslation(t);
+
+    Point2d p = getPosition(); 
+    double maxRampSpeed = 0.3;
+    double minRampSpeed = -0.3;
+    double orientation = getOrientation();
+    if (p.y > 450&& p.y < 700 && orientation < 0.0){
+        if(t > maxRampSpeed)
+            setTranslation(maxRampSpeed);
+        else if (t < minRampSpeed)
+            setTranslation(minRampSpeed);
+        else
+            setTranslation(t);     
+    }
+    else if (p.y > 450 && p.y < 700 && orientation >= 0.0){
+            if (t <= 0.9)
+                t += 0.2;
+            else if (t >= -0.9)
+                t -= 0.2;
+            setTranslation(t);     
+    }
+    else{
+        setTranslation(t);
+    }
     //std::cout <<"\nTranslation : " << t<<"\n";
     //setTranslation(calculateTranslation());
     t = calculateRotation();
@@ -56,7 +77,6 @@ void MyOwnProjectController::step(){
     //std::cout << "\nRotation :" << t<<"\n";
     //std::cout << "\nDrop : "<<calculateDrop()<<"\n";
     calculateDrop();
-    std::cout << "blabla\n";
 }
 //Fonctions de ramassage et dépôt d'objets
 bool MyOwnProjectController::getCanCollect(){

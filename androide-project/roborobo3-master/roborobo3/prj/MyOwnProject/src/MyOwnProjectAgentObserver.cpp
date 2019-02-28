@@ -35,11 +35,17 @@ void MyOwnProjectAgentObserver::stepPre()
     {
         int targetIndex = _wm->getObjectIdFromCameraSensor(i);
         
-        if ( targetIndex >= gPhysicalObjectIndexStartOffset && targetIndex < gRobotIndexStartOffset )   // sensor ray bumped into a physical object
-        {
-            targetIndex = targetIndex - gPhysicalObjectIndexStartOffset;
-            //std::cout << "[DEBUG] Robot #" << _wm->getId() << " touched " << targetIndex << "\n";
-            gPhysicalObjects[targetIndex]->isTouched(_wm->getId());
+        if(targetIndex){
+            
+            if ( targetIndex >= gPhysicalObjectIndexStartOffset && targetIndex < gRobotIndexStartOffset )   // sensor ray bumped into a physical object
+            {
+                targetIndex = targetIndex - gPhysicalObjectIndexStartOffset;
+                //std::cout << "[DEBUG] Robot #" << _wm->getId() << " touched " << targetIndex << "\n";
+                if(gPhysicalObjects[targetIndex]){
+                    gPhysicalObjects[targetIndex]->isTouched(_wm->getId());
+                }
+                
+            } 
         }
     }
     

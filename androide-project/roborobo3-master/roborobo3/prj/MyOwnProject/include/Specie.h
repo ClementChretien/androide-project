@@ -21,10 +21,11 @@ class Specie
         int isPosMax;
         int fitness;
         std::vector<Genome> pop;
+        std::string name;
 	
     public : 
         Specie(int nbAgent, int genSize,int isPosMin,int isPosMax);
-        void initPop();
+        void initPop(std::string name);
         void initAgent(int ag);
         void setAgent(std::vector<float> g,int iAgent);
         std::vector<float> getAgent(int iAgent);
@@ -39,4 +40,6 @@ class Specie
         int getPosMax();
         void setFitness(int v);
         int getFitness();
+        void setName(std::string name);
+        std::string getName();
 };
