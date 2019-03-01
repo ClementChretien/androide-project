@@ -20,8 +20,10 @@ class MyOwnProjectWorldObserver : public WorldObserver
 		int popEtu;
 		int genSize;
 		std::vector<Specie> s;
+		std::vector<int> layers;
 		int generation;
 		int cptName;
+    	int evalType;
 	public:
 		MyOwnProjectWorldObserver( World *__world );
 		~MyOwnProjectWorldObserver();
@@ -37,6 +39,11 @@ class MyOwnProjectWorldObserver : public WorldObserver
 		int getPoint();
 		void resetPoint();
 
+		//Evaluation
+		void evaluation();
+        void evaluationNormale();
+        void evaluationHaut(int a);
+        void evaluationBas();
 		void initAgents(int nbAgent,Specie p);
 
         std::vector<Specie> selectionTournoi(std::vector<Specie> s,std::vector<Specie> newS);
@@ -44,8 +51,7 @@ class MyOwnProjectWorldObserver : public WorldObserver
         std::vector<Specie> remplirRandom(std::vector<Specie> newS,int iMin);
 		std::vector<Specie> mutation(std::vector<Specie> newS);
     	void initObjects();
-		void analyseSpecie(int specie);
-		
+
 };
 
 #endif

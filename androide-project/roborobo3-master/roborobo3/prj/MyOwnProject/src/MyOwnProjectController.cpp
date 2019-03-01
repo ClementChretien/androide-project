@@ -197,7 +197,12 @@ void MyOwnProjectController::step(){
     sortie.pop_back();
     setRotation(tanh(sortie.back()));
     sortie.pop_back();
-    setTranslation(tanh(sortie.back()));
+    if(sortie.back()<0){
+        setTranslation(tanh(-sortie.back()));    
+    }
+    else{
+        setTranslation(tanh(sortie.back()));
+    }
     sortie.pop_back();
 }
 //Fonctions de ramassage et dépôt d'objets

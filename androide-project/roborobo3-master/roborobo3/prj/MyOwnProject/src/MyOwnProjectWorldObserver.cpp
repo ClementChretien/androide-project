@@ -27,11 +27,14 @@ MyOwnProjectWorldObserver::MyOwnProjectWorldObserver( World *__world ) : WorldOb
 	_world = __world;
     this->pointCount = 0;
     this->nbAgent = 5;
-    this->nbPop = 10;
+    this->nbPop = 50;
+    std::vector<int>l{17,3};
+    this->layers = l;
     this->popEtu = 0;
     this->genSize = 17*3;
     this->generation=0;
     this->cptName=0;
+    this->evalType = 0;
     std::vector<Specie> s(this->nbPop,Specie(this->genSize));
     this->s = s;
     for (int p = 0 ; p < this->nbPop ; p++){
@@ -89,11 +92,17 @@ void MyOwnProjectWorldObserver::stepPre()
             this->addPoint();
              
             if(p.y>rampeYMin && p.y < rampeYMax){
+                if(this->evalType == 1){
+                    this->addPoint(50);
+                }
                 int ymin = 700;
                 int ymax = 730;
                 object->relocate(ymin,ymax,true);
             }else if(p.y>nestYMin && p.y < nestYMax)
             {                    
+                if(this->evalType == 2||this->evalType == 0){
+                    this->addPoint(50);
+                }
                 //std::cout << "One point ! #########################################################\n";
                 object->setRegion(0.0,0.3);    
                 object->relocate();
@@ -110,7 +119,7 @@ void MyOwnProjectWorldObserver::stepPre()
     // REMOVE OR COMMENT THE FOLLOWING TO AVOID RESETTING POSITIONS EVERY 100 ITERATIONS
     //
 
-    
+    //evaluation();
     //Reset
     if ( gWorld->getIterations() % 2500 == 0 )
     {
@@ -142,6 +151,11 @@ void MyOwnProjectWorldObserver::stepPre()
             MyOwnProjectController *controller = ((MyOwnProjectController*)(gWorld->getRobot(i)->getController()));
              
             std::vector<float> ga = this->s[i].getAgent();
+            /*std::cout << "\n ";
+            for(int l = 0 ; l < ga.size() ; l++){
+                std::cout <<ga[l] <<" ";
+            }
+            std::cout << "\n ";*/
             controller->setGenome(ga);
             controller->init();
             //std::cout << "Reset Robot Done\n";
@@ -178,9 +192,6 @@ void MyOwnProjectWorldObserver::initObjects(){
         object->relocate();
     }*/
 }
-void MyOwnProjectWorldObserver::analyseSpecie(int iSpecie){
-
-}
 
 void MyOwnProjectWorldObserver::initAgents(int nbAgent,Specie p){
     for ( int i = 0 ; i !=nbAgent ; i++ )
@@ -201,14 +212,15 @@ std::vector<Specie> MyOwnProjectWorldObserver::selectionTournoi(std::vector<Spec
         while(toAdd.size()<tailleRec){
             toAdd.push_back(int(random01()*s.size()));
         }
-        int iMin = -1;
-        int vMin = -1;
+        int iMin = int(random01()*s.size());
+        int vMin = s[iMin].getFitness();
         for (int j = 0 ; j < toAdd.size() ; j++){
             if(vMin == -1||s[j].getFitness()> vMin){
                 iMin = j;
                 vMin = s[j].getFitness();
             }
         }
+        std::cout <<" Pop choisie : " << s[iMin].getName()<<"\n";
         
         newS[i]=s[iMin];
     }
@@ -251,11 +263,45 @@ std::vector<Specie> MyOwnProjectWorldObserver::mutation(std::vector<Specie> newS
     }
     return newS;
 }
-void MyOwnProjectWorldObserver::stepPost()
-{
+
+/*
+void MyOwnProjectController::evaluationNormale(){
+
 }
+void MyOwnProjectController::evaluationHaut(int a){
+    for ( int i = 0 ; i !=this->nbAgent ; i++ )
+    {
+        MyOwnProjectController *controller = ((MyOwnProjectController*)(gWorld->getRobot(i)->getController()));
+        
+        Point2D p = controller->getPosition();
+        if(p.y>nestYMin && p.y<nestYMax){
+            this->addPoint();
+        }
+    }
+}
+void MyOwnProjectController::evaluationBas(){
+    for ( int i = 0 ; i !=this->nbAgent ; i++ )
+    {
+        MyOwnProjectController *controller = ((MyOwnProjectController*)(gWorld->getRobot(i)->getController()));
+        
+        Point2D p = controller->getPosition();
+        if(p.y<rampeYMin ){
+            this->addPoint();
+        }
+    }
 
-
+}
+void MyOwnProjectController::evaluation(){
+    if(this->evalType == 0){
+        this->evaluationNormale();
+    }
+    else if(this->evalType == 1){
+        this->evaluationHaut();
+    }
+    else if(this->evalType == 2){
+        this->evaluationBas();
+    }
+}*/
 
 void MyOwnProjectWorldObserver::addPoint(){
     this->addPoint(1);
@@ -268,4 +314,7 @@ void MyOwnProjectWorldObserver::resetPoint(){
 }
 int MyOwnProjectWorldObserver::getPoint(){
     return this->pointCount;
+}
+void MyOwnProjectWorldObserver::stepPost()
+{
 }
