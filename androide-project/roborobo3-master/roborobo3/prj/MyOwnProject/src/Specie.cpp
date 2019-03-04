@@ -28,10 +28,7 @@ void Specie::initPop(std::string name){
     this->pop.initGenome();
 }
 void Specie::setNucleo(int iNucleo, float value){
-
-    /*std::cout << "1Bla "<< sizeOf(pop)  <<" \n";
-    pop[iAgent][iNucleo] = value;
-    std::cout << "2Bla "<< iAgent <<" : " << value <<" \n";*/
+    this->pop.setNucleo(iNucleo,value);
 }
 void Specie::setGenome(std::vector<float> g){
     this->pop.setGenome(g);

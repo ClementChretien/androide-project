@@ -33,6 +33,7 @@ MyOwnProjectController::MyOwnProjectController( RobotWorldModel *__wm ) : Contro
 void MyOwnProjectController::init(){
     this->setObjCollected(false);
     this->setCanInstantDrop(false);
+    this->setIsObserved(false);
 }
 MyOwnProjectController::~MyOwnProjectController()
 {
@@ -144,19 +145,32 @@ vector<float> MyOwnProjectController::definirEntree(){
     int nestYMax=1000;
     Point2d p = this->getPosition();
     if(p.y>rampeYMin && p.y < rampeYMax){
-        x.push_back(2);
+        x.push_back(1);
     }
-    else if(p.y>nestYMin && p.y < nestYMax)
-    {                    
+    else{
         x.push_back(0);
     }
-    else if(p.y>nestYMax && p.y < rampeYMin)
+    if(p.y>nestYMin && p.y < nestYMax)
     {                    
         x.push_back(1);
     }
-    else{       
-        x.push_back(3);
+    else{
+        x.push_back(0);
     }
+    if(p.y>nestYMax && p.y < rampeYMin)
+    {                    
+        x.push_back(1);
+    }
+    else{
+        x.push_back(0);
+    }
+    if(p.y<rampeYMin){       
+        x.push_back(1);
+    }
+    else{
+        x.push_back(0);
+    }
+    //x.push_back(this->getOrientation());
     //Biais
     x.push_back(1);
     return x;
@@ -179,6 +193,7 @@ std::vector<float> MyOwnProjectController::calculateSortie(std::vector<float> x)
             for(int j = 0 ; j < layers[lay-1] ; j++){
                 xI[i]=xI[i]+x[j]*this->genome[posCouchePoids + j*layers[lay]+i];
             }
+            xI[i] = tanh(xI[i]);
         }
         x = xI;
         posCouchePoids = posCouchePoids + layers[lay-1]*layers[lay];
@@ -191,18 +206,44 @@ void MyOwnProjectController::step(){
     /*for (auto i = this->genome.begin(); i != this->genome.end(); ++i)
         std::cout << *i << ' ';
     std::cout <<"\n";*/
-    if(tanh(sortie.back())>0.5 && this->getObjCollected()==true){
+    if(sortie.back()>0.5 && this->getObjCollected()==true){
         this->setCanInstantDrop(true);
     }
     sortie.pop_back();
-    setRotation(tanh(sortie.back()));
+    setRotation(sortie.back()*0.3);
     sortie.pop_back();
-    if(sortie.back()<0){
-        setTranslation(tanh(-sortie.back()));    
+    
+    Point2d p = getPosition(); 
+    double normalT = abs(sortie.back());
+        
+    double maxRampSpeed = 0.3;
+    double minRampSpeed = -0.3;
+    double orientation = getOrientation();
+
+    if (/*p.x > 250 && p.x < 670 &&*/ p.y > 450&& p.y < 700 && orientation < 0.0){
+        if(normalT > maxRampSpeed)
+            setTranslation(maxRampSpeed);
+        else if (normalT < minRampSpeed)
+            setTranslation(minRampSpeed);
+        else
+            setTranslation(std::min((double)1,normalT));     
+    }
+    else if (/*p.x > 250 && p.x < 670 && */p.y > 450 && p.y < 700 && orientation >= 0.0){
+            if (normalT <= 0.9)
+                normalT += 0.2;
+            else if (normalT >= -0.9)
+                normalT -= 0.2;
+            setTranslation(std::min((double)1,normalT)); 
     }
     else{
-        setTranslation(tanh(sortie.back()));
+        setTranslation(std::min((double)1,normalT));
+    }   
+    /*if(sortie.back()<0){
+        setTranslation(-sortie.back());    
     }
+    else{
+        setTranslation(sortie.back());
+    }*/
     sortie.pop_back();
 }
 //Fonctions de ramassage et dépôt d'objets
@@ -221,6 +262,12 @@ bool MyOwnProjectController::getCanInstantDrop(){
 bool MyOwnProjectController::getObjCollected(){
     return this->objCollected;
 }
+bool MyOwnProjectController::getIsObserved(){
+    return this->objObserved;
+}
+std::vector<int> MyOwnProjectController::getLayers(){
+    return this->layers;
+}
 
 void MyOwnProjectController::setCanCollect(bool c){
     this->canCollect = c;
@@ -234,11 +281,15 @@ void MyOwnProjectController::setCanDropNest(bool c){
 void MyOwnProjectController::setCanInstantDrop(bool c){
     this->instantDrop = c;
 }
+void MyOwnProjectController::setIsObserved(bool c){
+    this->objObserved=c;
+}
 void MyOwnProjectController::setObjCollected(bool c){
     this->objCollected = c;
     if(c == true){
         //std::cout << "Can not collect anymore\n";
         this->setCanCollect(false);
+        this->setIsObserved(false);
         //this->setCanDropSlope(true);
         //this->setCanDropNest(true);
         //this->setCanInstantDrop(true);
@@ -250,6 +301,14 @@ void MyOwnProjectController::setObjCollected(bool c){
         //this->setCanDropNest(false);
         this->setCanInstantDrop(false);
     }
+}
+void MyOwnProjectController::setLayers(std::vector<int> l){
+    int nb = 0;
+    for(int i = 0 ; i < l.size()-1 ; i++){
+        nb= nb+ l[i]*l[i+1];
+    }
+    this->genome.resize(nb,0);
+    this->layers=l;
 }
 
 //Fonctions

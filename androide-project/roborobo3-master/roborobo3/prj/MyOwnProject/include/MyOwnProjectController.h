@@ -24,6 +24,7 @@ class MyOwnProjectController : public Controller
 		bool canDropSlope;//Est ce que le robot peux deposer un objet dans la zone de pente
 		bool canDropNest;//Est ce que le robot peux deposer un objet dans la zone de depot final
 		bool instantDrop;//Pour l'activation du dépot automatique
+		bool objObserved;//Pour l'activation du dépot automatique
 		std::vector<float> genome;
     	std::vector<int> layers;
 	
@@ -40,11 +41,15 @@ class MyOwnProjectController : public Controller
 		bool getCanDropNest();
 		bool getCanInstantDrop();
 		bool getObjCollected();
+		bool getIsObserved();
+		std::vector<int> getLayers();
 		void setCanCollect(bool c);
 		void setCanDropSlope(bool c);
 		void setCanDropNest(bool c);
 		void setCanInstantDrop(bool c);
 		void setObjCollected(bool c);
+		void setIsObserved(bool c);
+		void setLayers(std::vector<int> l);
         void monitorSensoryInformation();
 
 		//AG

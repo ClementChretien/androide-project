@@ -44,10 +44,10 @@ void MyEnergyItem::isTouched( int __idAgent )
         this->relocate();
         this->unregisterObject();
     }
-    /*else{
-        std::cout << "Not Collected";
+    else{
+        //std::cout << "Not Collected";
         _visible = true;
-    }*/
+    }
     //std::cout << (c->getCanCollect());
 }
 
