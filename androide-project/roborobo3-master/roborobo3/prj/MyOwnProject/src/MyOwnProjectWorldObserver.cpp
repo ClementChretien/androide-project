@@ -28,15 +28,15 @@ MyOwnProjectWorldObserver::MyOwnProjectWorldObserver( World *__world ) : WorldOb
 	_world = __world;
     this->pointCount = 0;
     this->nbAgent = 1;
-    this->nbPop = 50;
-    std::vector<int>l{20,3};
+    this->nbPop = 100;
+    std::vector<int>l{20,10,3};
     this->layers = l;
     this->popEtu = 0;
-    this->genSize = 20*3;
+    this->genSize = 2010+10*3;
     this->generation=0;
     this->cptName=0;
     this->evalType = 1;
-    this->numberMaxOfGen = 250;
+    this->numberMaxOfGen = 500;
     std::vector<Specie> s(this->nbPop,Specie(this->genSize));
     this->s = s;
     for (int p = 0 ; p < this->nbPop ; p++){
@@ -91,14 +91,14 @@ void MyOwnProjectWorldObserver::stepPre()
 
                     //
                     if(this->evalType == 1){
-                        std::cout << "Dropped in slope!\n";
-                        this->addPoint(500);
+                        //std::cout << "Dropped in slope!\n";
+                        this->addPoint(10000);
                     }
                 }else if(p.y>nestYMin && p.y < nestYMax)
                 {                    
                     //std::cout << "Dropped in nest!\n";
                     if(this->evalType == 2||this->evalType == 0){
-                        this->addPoint(10000);
+                        this->addPoint(1000);
                     }
                 }
                 else{                   
@@ -130,16 +130,16 @@ void MyOwnProjectWorldObserver::stepPre()
             this->popEtu = this->popEtu+1;
             if(this->popEtu == this->nbPop){
                 this->generation = this->generation+1;
-                std::cout << "Gen :" << this->generation<<"\n";
                 for ( int i = 0 ; i < this->nbPop ; i ++){
                     std::cout << "Fitness de : " << s[i].getName() << ":" << this->s[i].getFitness()<<"\n";
                 }
                 std::cout << "Evolution de populations\n";
+                std::cout << "Gen :" << this->generation-1<<"\n";
                 this->popEtu = 0;
                 //Séléctions
                 std::vector<Specie> newS(this->nbPop,Specie(this->genSize));
                 newS = this->selectionTournoi(this->s,newS,s.size()*0.7);
-                newS = this->remplirRandom(newS,s.size()*0.9);
+                newS = this->remplirRandom(newS,s.size()*0.6);
                 //newS = this->ajouterCroisement(this->s,newS,this->nbPop*0.8,this->nbPop);
                 //Mutation
                 newS = this->mutation(newS,3);
@@ -211,7 +211,9 @@ void MyOwnProjectWorldObserver::stepPre()
         }
         else if(this->evalType == 2){
             std::cout << "Meilleure pop pour le type Bas\n";
-        }
+        }   
+        //char str[100];
+        scanf("%s");
     }
     
 }
@@ -266,7 +268,7 @@ void MyOwnProjectWorldObserver::initAgents(int nbAgent,Specie p){
 
 std::vector<Specie> MyOwnProjectWorldObserver::selectionTournoi(std::vector<Specie> s,std::vector<Specie> newS, int nb){
     //Prendre x pop et selectionner juste le meilleur
-    int tailleRec=  s.size()/20+1;
+    int tailleRec=  3;//s.size()/20+1;
     std::vector<int> toAdd;
     for( int i = 0 ; i < s.size() ; i++){
         if(random01()*s.size()<nb){
@@ -310,7 +312,7 @@ std::vector<Specie> MyOwnProjectWorldObserver::remplirRandom(std::vector<Specie>
     return newS;
 }
 std::vector<Specie> MyOwnProjectWorldObserver::mutation(std::vector<Specie> newS, int nbToMutate){
-    for(int i = 0 ; i < newS.size() ; i++){
+    for(int i = 1 ; i < newS.size() ; i++){
         for(int j = 0 ; j < nbToMutate ; j++){
             int r = newS[0].getGenSize()*random01();
             newS[i].setNucleo(r,random01()*2-1);
@@ -343,7 +345,16 @@ void MyOwnProjectWorldObserver::evaluationHaut(){
         
         Point2d p = controller->getPosition();
         if(p.y>nestYMin && p.y<nestYMax){
-            this->addPoint();
+            this->removePoint(5);
+        }
+        if(p.y>rampeYMax){
+            this->removePoint(3);
+        }
+        if(p.y < rampeYMin){
+            this->addPoint(5);
+        }
+        if(p.y > rampeYMin && p.y < rampeYMax){
+            this->addPoint(1);
         }
     }
 }
