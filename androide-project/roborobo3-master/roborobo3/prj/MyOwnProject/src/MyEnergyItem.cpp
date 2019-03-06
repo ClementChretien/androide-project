@@ -40,13 +40,12 @@ void MyEnergyItem::isTouched( int __idAgent )
     if(c->getCanCollect() == true){
         c->setObjCollected(true);
         //std::cout << "Collected\n";
-        this->setRegion(0.0,0.3);
+        this->setRegion(0.0,0.2);
         this->relocate();
         this->unregisterObject();
     }
     else{
         //std::cout << "Not Collected";
-        _visible = true;
     }
     //std::cout << (c->getCanCollect());
 }

@@ -139,8 +139,10 @@ vector<float> MyOwnProjectController::definirEntree(){
     else{
         x.push_back(0);
     }
-    int rampeYMin=400;
+    int depotMin = 400;
+    int rampeYMin=450;
     int rampeYMax=700;
+    int recupMax = 750;
     int nestYMin=950;
     int nestYMax=1000;
     Point2d p = this->getPosition();
@@ -151,6 +153,20 @@ vector<float> MyOwnProjectController::definirEntree(){
         x.push_back(0);
     }
     if(p.y>nestYMin && p.y < nestYMax)
+    {                    
+        x.push_back(1);
+    }
+    else{
+        x.push_back(0);
+    }
+    if(p.y>depotMin && p.y < rampeYMin)
+    {                    
+        x.push_back(1);
+    }
+    else{
+        x.push_back(0);
+    }
+    if(p.y>rampeYMax && p.y < recupMax)
     {                    
         x.push_back(1);
     }

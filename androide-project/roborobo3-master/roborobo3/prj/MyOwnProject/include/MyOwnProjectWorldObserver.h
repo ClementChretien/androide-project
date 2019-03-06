@@ -51,9 +51,10 @@ class MyOwnProjectWorldObserver : public WorldObserver
         std::vector<Specie> selectionTournoi(std::vector<Specie> s,std::vector<Specie> newS, int nb);
         //std::vector<Specie> ajouterCroisement(std::vector<Specie> s,std::vector<Specie> newS,int iMin,int iMax);
         std::vector<Specie> remplirRandom(std::vector<Specie> newS,int iMin);
-		std::vector<Specie> mutation(std::vector<Specie> newS, int nbToMutate);
+		std::vector<Specie> mutation(std::vector<Specie> newS, int nbToMutate, float pourcent);
     	void initObjects();
 
+		void writeFile();
 };
 
 #endif
