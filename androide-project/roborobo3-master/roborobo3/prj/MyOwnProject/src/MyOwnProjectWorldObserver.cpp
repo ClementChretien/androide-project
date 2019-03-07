@@ -5,7 +5,9 @@
 //Variables globales
 //Zone de jeu
 int zoneCollectMin = 50;
-int rampeYMin=400;
+int depotMin = 400;
+int depotMax = 450;
+int rampeYMin=450;
 int rampeYMax=700;
 int nestYMin=950;
 int nestYMax=1000;
@@ -29,13 +31,13 @@ MyOwnProjectWorldObserver::MyOwnProjectWorldObserver( World *__world ) : WorldOb
     this->pointCount = 0;
     this->nbAgent = 1;
     this->nbPop = 100;
-    std::vector<int>l{22,10,3};
+    std::vector<int>l{23,10,10,3};
     this->layers = l;
     this->popEtu = 0;
-    this->genSize = 22*10+10*3;
+    this->genSize = 23*10+10*10+10*3;
     this->generation=0;
     this->cptName=0;
-    this->evalType = 1;
+    this->evalType = 0;
     this->numberMaxOfGen = 200;
     std::vector<Specie> s(this->nbPop,Specie(this->genSize));
     this->s = s;
@@ -88,7 +90,7 @@ void MyOwnProjectWorldObserver::stepPre()
                 c->setObjCollected(false);
                 float ori = c->getOrientation();
                 
-                if(p.y>rampeYMin && p.y < rampeYMax){
+                if(p.y>depotMin && p.y < rampeYMax){
 
                     
                     /*int id = PhysicalObjectFactory::getNextId();
@@ -108,7 +110,7 @@ void MyOwnProjectWorldObserver::stepPre()
                 {                    
                     //std::cout << "Dropped in nest!\n";
                     if(this->evalType == 2||this->evalType == 0){
-                        this->addPoint(1000);
+                        this->addPoint(30000);
                     }
                 }
                 else{                   
@@ -156,7 +158,7 @@ void MyOwnProjectWorldObserver::stepPre()
                 this->s=newS;
                 writeFile();
             }
-            for ( int i = 0 ; i !=this->nbAgent ; i++ )
+            for ( int i = this->nbAgent-1 ; i !=-1 ; i-- )
             {
                 Robot *robot = (gWorld->getRobot(i));
                 
@@ -285,7 +287,7 @@ void MyOwnProjectWorldObserver::initAgents(int nbAgent,Specie p){
 
 std::vector<Specie> MyOwnProjectWorldObserver::selectionTournoi(std::vector<Specie> s,std::vector<Specie> newS, int nb){
     //Prendre x pop et selectionner juste le meilleur
-    int tailleRec=  3;//s.size()/20+1;
+    int tailleRec=  s.size()/20+1;
     std::vector<int> toAdd;
     for( int i = 0 ; i < s.size() ; i++){
         if(random01()*s.size()<nb){
@@ -346,14 +348,14 @@ void MyOwnProjectWorldObserver::evaluationNormale(){
         
         Point2d p = controller->getPosition();
         if(controller->getObjCollected() == true && controller->getIsObserved() == false){
-            this->addPoint(100);
+            this->addPoint(5000);
             controller->setIsObserved(true);
         }
-        if(p.y>nestYMin && p.y<nestYMax && controller->getObjCollected()){
-            this->addPoint(1);
+        if(controller->getObjCollected() == true && p.y<nestYMin){
+            this->removePoint(10);
         }
-        if(p.y>zoneCollectMin && p.y<rampeYMin && !controller->getObjCollected()){
-            this->addPoint(1);
+        if(controller->getObjCollected() == false && p.y>depotMin){
+            this->removePoint(10);
         }
     }
 }
@@ -363,29 +365,18 @@ void MyOwnProjectWorldObserver::evaluationHaut(){
         MyOwnProjectController *controller = ((MyOwnProjectController*)(gWorld->getRobot(i)->getController()));
         
         Point2d p = controller->getPosition();
-        if(p.y>nestYMin && p.y<nestYMax){
-            this->removePoint(5);
-            if(controller->getOrientation()<0){
-                this->addPoint(2);
-            }
+        if(controller->getObjCollected() == true && controller->getIsObserved() == false){
+            this->addPoint(5000);
+            controller->setIsObserved(true);
         }
+        if(p.y>depotMin){
+            this->removePoint(3);
+        }
+        /*if(controller->getObjCollected() == true){
+            this->removePoint(5);
+        }*/
         if(p.y>rampeYMax){
             this->removePoint(3);
-            if(controller->getOrientation()<0){
-                this->addPoint(2);
-            }
-        }
-        if(p.y < rampeYMin){
-            this->addPoint(3);
-        }
-        if(p.y > rampeYMin && p.y < rampeYMax){
-            this->addPoint(1);
-            if(controller->getOrientation()<0){
-                this->addPoint(2);
-            }
-        }
-        if(p.y>450 && controller->getObjCollected() == true){
-            this->removePoint(100);
         }
     }
 }

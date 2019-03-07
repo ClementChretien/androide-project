@@ -186,7 +186,7 @@ vector<float> MyOwnProjectController::definirEntree(){
     else{
         x.push_back(0);
     }
-    //x.push_back(this->getOrientation());
+    x.push_back(this->getOrientation());
     //Biais
     x.push_back(1);
     return x;
