@@ -110,7 +110,7 @@ void MyOwnProjectWorldObserver::stepPre()
                 {                    
                     //std::cout << "Dropped in nest!\n";
                     if(this->evalType == 2||this->evalType == 0){
-                        this->addPoint(30000);
+                        this->addPoint(50000);
                     }
                 }
                 else{                   
@@ -123,7 +123,7 @@ void MyOwnProjectWorldObserver::stepPre()
                     double objX = p.x - cos(M_PI*ori)*50;
                     double objY = p.y - sin(M_PI*ori)*50;
                     object->relocate(objX,objY,false,0.0,0.2);
-                    this->removePoint(5000);
+                    this->removePoint(25000);
                 }
             }
             
@@ -348,15 +348,40 @@ void MyOwnProjectWorldObserver::evaluationNormale(){
         
         Point2d p = controller->getPosition();
         if(controller->getObjCollected() == true && controller->getIsObserved() == false){
-            this->addPoint(5000);
+            this->addPoint(15000);
             controller->setIsObserved(true);
         }
-        if(controller->getObjCollected() == true && p.y<nestYMin){
-            this->removePoint(10);
+        if(controller->getObjCollected() == true )
+        {
+            if(controller->getOrientation()<0){
+                this->removePoint(5);
+                if(p.y>rampeYMax){
+                    this->addPoint(10);
+                }
+            }else{
+                if(p.y<nestYMin){
+                    this->removePoint(10);
+                }
+            }
+            
         }
+        if(controller->getObjCollected() == false){
+            
+            if(controller->getOrientation()>=0){
+                this->removePoint(5);
+                if(p.y<depotMin){
+                    this->addPoint(10);
+                }
+            }else{
+                if(p.y>depotMin){
+                    this->removePoint(10);
+                }
+            }
+        }
+        /*
         if(controller->getObjCollected() == false && p.y>depotMin){
             this->removePoint(10);
-        }
+        }*/
     }
 }
 void MyOwnProjectWorldObserver::evaluationHaut(){
