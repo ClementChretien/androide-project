@@ -17,19 +17,25 @@ using namespace std;
 
 EvaluationPopulationsController::EvaluationPopulationsController( RobotWorldModel *__wm ) : Controller ( __wm )
 {
+    std::cout << "init agent \n";
     if ( _wm->_cameraSensorsNb != NB_SENSORS )
     {
         std::cerr << "[CRITICAL] This project assumes robot specifications with " << NB_SENSORS << " sensors (provided: " << _wm->_cameraSensorsNb << " sensors). STOP.\n";
         exit(-1);
     }
     init();
+    std::cout << "init agent 2\n";
     std::vector<float> genome{1};
+    std::cout << "init agent 3\n";
     this->genome = genome;
-    this->genome.resize(17*3,1);
+    this->genome.resize(17*3,0);
+    std::cout << "init agent 4\n";
     std::vector<int> layers{17,3};
     this->layers = layers;
+    std::cout << "init agent 5\n";
     size_t nbParams = 14;
     _params.resize(nbParams,0); // initialize an array with zero values.
+    std::cout << "init agent 6\n";
 }
 void EvaluationPopulationsController::init(){
     this->setObjCollected(false);
@@ -219,8 +225,10 @@ std::vector<float> EvaluationPopulationsController::calculateSortie(std::vector<
 }
 //AG step
 void EvaluationPopulationsController::step(){
+    //std::cout << "Step controller\n";
     std::vector<float> sortie = this->calculateSortie(this->definirEntree());
-    /*for (auto i = this->genome.begin(); i != this->genome.end(); ++i)
+    /*std::cout << "Vec entrée:\n";
+    for (auto i = this->genome.begin(); i != this->genome.end(); ++i)
         std::cout << *i << ' ';
     std::cout <<"\n";*/
     if(sortie.back()>0.5 && this->getObjCollected()==true){
@@ -236,7 +244,7 @@ void EvaluationPopulationsController::step(){
     double maxRampSpeed = 0.3;
     double minRampSpeed = -0.3;
     double orientation = getOrientation();
-
+    //std::cout << "Translation : "<<normalT<<"\n";
     if (/*p.x > 250 && p.x < 670 &&*/ p.y > 450&& p.y < 700 && orientation < 0.0){
         if(normalT > maxRampSpeed)
             setTranslation(maxRampSpeed);
@@ -334,6 +342,10 @@ void EvaluationPopulationsController::setGenome(std::vector<float> g){
         //std::cout << i << g.size()<<"\n";
         this->genome[i]=g[i];
     }
+    std::cout << "Genome set inside controller\n";
+    for (auto i = this->genome.begin(); i != this->genome.end(); ++i)
+        std::cout << *i << ' ';
+    std::cout <<"\n";
 }
 std::vector<float> EvaluationPopulationsController::getGenome(){
     return this->genome;

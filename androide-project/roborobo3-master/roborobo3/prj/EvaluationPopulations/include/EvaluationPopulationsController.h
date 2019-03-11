@@ -13,6 +13,8 @@
 using namespace std; 
 #include "MyOwnProject/include/Genome.h"
 
+#include "MyOwnProject/include/MyOwnProjectController.h"
+
 class RobotWorldModel;
 
 class EvaluationPopulationsController : public Controller
