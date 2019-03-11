@@ -1,26 +1,25 @@
 //
-//  MyEnergyItem.cpp
+//  EvalMyEnergyItem.cpp
 //  roborobo3
 //
 //  Created by Nicolas Bredeche on 06/12/17.
 //  Copyright © 2017 Nicolas Bredeche. All rights reserved.
 //
 
-#include "MyOwnProject/include/MyEnergyItem.h"
-#include "MyOwnProject/include/MyOwnProjectController.h"
+#include "EvaluationPopulations/include/EvalMyEnergyItem.h"
+#include "EvaluationPopulations/include/EvaluationPopulationsController.h"
 #include "RoboroboMain/roborobo.h"
 #include "World/World.h"
 #include "WorldModels/RobotWorldModel.h"
 #include "Utilities/Misc.h"
 
-double leftRegionDensity = 0.99;
 
-MyEnergyItem::MyEnergyItem( int __id ) : EnergyItem( __id )
+EvalMyEnergyItem::EvalMyEnergyItem( int __id ) : EnergyItem( __id )
 {
     
 }
 
-void MyEnergyItem::step()
+void EvalMyEnergyItem::step()
 {
     EnergyItem::step();
  
@@ -31,35 +30,27 @@ void MyEnergyItem::step()
     }
 }
 
-void MyEnergyItem::isTouched( int __idAgent )
+void EvalMyEnergyItem::isTouched( int __idAgent )
 {
     //EnergyItem::isTouched(__idAgent);
-    std::cout << "A\n";
-    MyOwnProjectController *c = dynamic_cast<MyOwnProjectController*>(gWorld->getRobot(__idAgent)->getController());
-    std::cout << "B\n";
-    std::cout << c<<"\n";
-    std::cout <<c->getCanCollect()<< "C\n";
+    EvaluationPopulationsController *c = dynamic_cast<EvaluationPopulationsController*>(gWorld->getRobot(__idAgent)->getController());
     if(c->getCanCollect() == true){
-        std::cout << "C\n";
         c->setObjCollected(true);
         //std::cout << "Collected\n";
         this->setRegion(0.0,0.2);
-        std::cout << "C\n";
         this->relocate();
         this->unregisterObject();
-        std::cout << "C\n";
     }
     else{
         //std::cout << "Not Collected";
     }
     //std::cout << (c->getCanCollect());
-    std::cout << "D\n";
 }
 
-void MyEnergyItem::isWalked( int __idAgent )
+void EvalMyEnergyItem::isWalked( int __idAgent )
 {
     /*//EnergyItem::isWalked(__idAgent);
-    MyOwnProjectController *c = dynamic_cast<MyOwnProjectController*>(gWorld->getRobot(__idAgent)->getController());
+    EvaluationPopulationsController *c = dynamic_cast<EvaluationPopulationsController*>(gWorld->getRobot(__idAgent)->getController());
     //std::cout << (c->getCanCollect());
     if(c->getCanCollect() == true){
         c->setObjCollected(true);
@@ -72,18 +63,18 @@ void MyEnergyItem::isWalked( int __idAgent )
     }*/
 }
 
-void MyEnergyItem::isPushed( int __id, std::tuple<double, double> __speed )
+void EvalMyEnergyItem::isPushed( int __id, std::tuple<double, double> __speed )
 {
     //EnergyItem::isPushed(__id,__speed);
 }
 
-void MyEnergyItem::setRegion( double offset, double range )
+void EvalMyEnergyItem::setRegion( double offset, double range )
 {
     this->_offsetRegion = offset;
     this->_range = range;
 }
 
-void MyEnergyItem::relocate()
+void EvalMyEnergyItem::relocate()
 {
     // * pick new coordinate
     
@@ -124,7 +115,7 @@ void MyEnergyItem::relocate()
     
     activeIt=0;
 }
-bool MyEnergyItem::relocate(double ymin, double ymax,bool ecart)
+bool EvalMyEnergyItem::relocate(double ymin, double ymax,bool ecart)
 {
     // * pick new coordinate
     
@@ -168,7 +159,7 @@ bool MyEnergyItem::relocate(double ymin, double ymax,bool ecart)
     
     activeIt=0;
 }
-bool MyEnergyItem::relocate(double ymin, double ymax,bool ecart,double offset, double range )
+bool EvalMyEnergyItem::relocate(double ymin, double ymax,bool ecart,double offset, double range )
 {
     // * pick new coordinate
     
@@ -211,7 +202,7 @@ bool MyEnergyItem::relocate(double ymin, double ymax,bool ecart,double offset, d
     
     activeIt=0;
 }
-bool MyEnergyItem::relocate(double xmin, double xmax, double ymin, double ymax)
+bool EvalMyEnergyItem::relocate(double xmin, double xmax, double ymin, double ymax)
 {
     // * pick new coordinate
     

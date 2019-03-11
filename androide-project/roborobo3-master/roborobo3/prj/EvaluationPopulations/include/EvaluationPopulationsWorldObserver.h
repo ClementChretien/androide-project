@@ -10,15 +10,16 @@
 #include "Observers/WorldObserver.h"
 #include "MyOwnProject/include/Specie.h"
 #include "MyOwnProject/include/Genome.h"
-
+#include <bits/stdc++.h> 
+#include <boost/algorithm/string.hpp> 
+using namespace std;
 class World;
 
 class EvaluationPopulationsWorldObserver : public WorldObserver
-{
+{	
 	protected:
 		int pointCount;
 		int nbAgent;
-		int nbPop;
 		int nbOfB;
 		int nbOfH;
 		int nbOfComplet;
@@ -28,9 +29,10 @@ class EvaluationPopulationsWorldObserver : public WorldObserver
 		int rampeYMax;
 		int nestYMin;
 		int nestYMax;
-    	std::string genomeHaut;
-    	std::string genomeBas;
-    	std::string genomeComplet;
+    	string genomeHaut;
+    	string genomeBas;
+    	string genomeComplet;
+		bool set;
 	public:
 		EvaluationPopulationsWorldObserver( World *__world );
 		~EvaluationPopulationsWorldObserver();
@@ -47,17 +49,7 @@ class EvaluationPopulationsWorldObserver : public WorldObserver
 		int getPoint();
 		void resetPoint();
 
-		//Evaluation
-		void evaluation();
-        void evaluationNormale();
-        void evaluationHaut();
-        void evaluationBas();
-		void initAgents(int nbAgent,Specie p);
 
-        std::vector<Specie> selectionTournoi(std::vector<Specie> s,std::vector<Specie> newS, int nb);
-        //std::vector<Specie> ajouterCroisement(std::vector<Specie> s,std::vector<Specie> newS,int iMin,int iMax);
-        std::vector<Specie> remplirRandom(std::vector<Specie> newS,int iMin);
-		std::vector<Specie> mutation(std::vector<Specie> newS, int nbToMutate, float pourcent);
     	void initObjects();
 
 		void writeFile(std::vector<int> s);

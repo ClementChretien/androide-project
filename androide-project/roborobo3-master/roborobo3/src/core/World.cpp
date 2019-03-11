@@ -61,6 +61,8 @@ World::World()
 	_iterations = 0;
 	_agentsVariation = false;
 	_worldObserver = gConfigurationLoader->make_WorldObserver(this);
+
+    std::cout <<"Post init all world\n";
 }
 
 
@@ -143,29 +145,34 @@ void World::initWorld()
     
     // *** Set up the world with landmarks, objects and robots
     
+    std::cout <<"Pre init pre world\n";
     _worldObserver->initPre();
-    
+    std::cout <<"Post init pre world\n";
     for ( int i = 0 ; i != gNbOfLandmarks ; i++)
     {
         gLandmarks.push_back(new LandmarkObject());
     }
+    std::cout <<"Post init lm world\n";
     
     for ( int i = 0 ; i != gNbOfPhysicalObjects ; i++)
     {
         PhysicalObjectFactory::makeObject();
     }
+    std::cout <<"Post init obj world\n";
     
 	for ( int i = 0 ; i != gInitialNumberOfRobots ; i++ )
 	{
 		Robot *robot = new Robot(this);
         this->addRobot(robot);
 	}
+    std::cout <<"Post init robot world\n";
 
     for ( int i = 0 ; i != gNbOfRobots ; i++ )
 		gRobotsRegistry[i]=false;
 
     
     _worldObserver->initPost();
+    std::cout <<"Post post initpost world\n";
 }
 
 void World::updateWorld(const Uint8 *__keyboardStates)
