@@ -37,8 +37,8 @@ MyOwnProjectWorldObserver::MyOwnProjectWorldObserver( World *__world ) : WorldOb
     this->genSize = 23*10+10*10+10*3;
     this->generation=0;
     this->cptName=0;
-    this->evalType = 0;
-    this->numberMaxOfGen = 200;
+    this->evalType = 2;
+    this->numberMaxOfGen = 2000;
     std::vector<Specie> s(this->nbPop,Specie(this->genSize));
     this->s = s;
     for (int p = 0 ; p < this->nbPop ; p++){
@@ -55,6 +55,9 @@ MyOwnProjectWorldObserver::~MyOwnProjectWorldObserver()
 void MyOwnProjectWorldObserver::initPre()
 {
     int nbObjectsTotal = 50;
+    if(this->evalType == 2){
+        nbObjectsTotal = 20;
+    }
     for ( int i = 0 ; i < nbObjectsTotal ; i++ )
     {
         // * create a new (custom) object
@@ -64,8 +67,14 @@ void MyOwnProjectWorldObserver::initPre()
         gPhysicalObjects.push_back( object );
         object->setDisplayColor(64,192,255);
         object->setType(1);
-        object->setRegion(0.0,0.2);
-        object->relocate(50,300,true);
+        if(this->evalType == 2){
+            object->relocate(rampeYMax,rampeYMax+75,true);
+        }
+        else{
+            object->setRegion(0.0,0.2);
+            object->relocate(50,300,true);
+        }
+        
     }
 }
 
@@ -232,15 +241,28 @@ void MyOwnProjectWorldObserver::stepPre()
     
 }
 void MyOwnProjectWorldObserver::initObjects(){
-        for (int i = 0 ; i < gPhysicalObjects.size() ; i++){
-        if(i >= gPhysicalObjects.size() - 50){
+    int nbObj = 50;
+
+    if(this->evalType == 2){
+        nbObj = 20;
+    }
+    for (int i = 0 ; i < gPhysicalObjects.size() ; i++){
+        if(i >= gPhysicalObjects.size() - nbObj){
                 
             //std::cout << i<<":"<<gPhysicalObjects.size() <<"\n";
             if(gPhysicalObjects[i]->isVisible()){
                 //std::cout << i<<":"<<gPhysicalObjects.size() <<"\n";
                 //gPhysicalObjects[i]->setRegion(0.0,0.2);
                 MyEnergyItem *e = ((MyEnergyItem*)gPhysicalObjects[i]);
-                e->relocate(50,300,false);
+                if(this->evalType == 2){
+                    //std::cout << "Relocate";
+                    e->relocate(rampeYMax,rampeYMax+75,true);
+                    //std::cout << "Relocate2\n";
+                }
+                else{
+                    e->setRegion(0.0,0.2);
+                    e->relocate(50,300,false);
+                }
             }
             else{
                 std::cout << "Found\n";
@@ -353,35 +375,17 @@ void MyOwnProjectWorldObserver::evaluationNormale(){
         }
         if(controller->getObjCollected() == true )
         {
-            if(controller->getOrientation()<0){
-                this->removePoint(5);
-                if(p.y>rampeYMax){
-                    this->addPoint(10);
-                }
-            }else{
-                if(p.y<nestYMin){
-                    this->removePoint(10);
-                }
-            }
+            /*if(p.y>rampeYMax){
+                this->addPoint(10);
+            }*/
             
         }
         if(controller->getObjCollected() == false){
             
-            if(controller->getOrientation()>=0){
-                this->removePoint(5);
-                if(p.y<depotMin){
-                    this->addPoint(10);
-                }
-            }else{
-                if(p.y>depotMin){
-                    this->removePoint(10);
-                }
+            if(p.y>depotMin){
+                this->removePoint(10);
             }
         }
-        /*
-        if(controller->getObjCollected() == false && p.y>depotMin){
-            this->removePoint(10);
-        }*/
     }
 }
 void MyOwnProjectWorldObserver::evaluationHaut(){
@@ -411,8 +415,12 @@ void MyOwnProjectWorldObserver::evaluationBas(){
         MyOwnProjectController *controller = ((MyOwnProjectController*)(gWorld->getRobot(i)->getController()));
         
         Point2d p = controller->getPosition();
-        if(p.y<rampeYMin ){
-            this->addPoint();
+        if(p.y<rampeYMax ){
+            this->removePoint(10000);
+        }
+        if(controller->getObjCollected() == true && controller->getIsObserved() == false){
+            this->addPoint(5000);
+            controller->setIsObserved(true);
         }
     }
 

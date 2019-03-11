@@ -8,6 +8,7 @@
 #include "Config/ForagingRegionsConfigurationLoader.h"
 #include "Config/TutorialConfigurationLoader.h"
 #include "Config/MyOwnProjectConfigurationLoader.h"
+#include "Config/EvaluationPopulationsConfigurationLoader.h"
 //###DO-NOT-DELETE-THIS-LINE###TAG:INCLUDE###//
 
 
@@ -79,6 +80,12 @@ ConfigurationLoader* ConfigurationLoader::make_ConfigurationLoader (std::string 
 	else if (configurationLoaderObjectName == "MyOwnProjectConfigurationLoader" )
 	{
 		return new MyOwnProjectConfigurationLoader();
+	}
+#endif
+#if defined PRJ_EVALUATIONPOPULATIONS || !defined MODULAR
+	else if (configurationLoaderObjectName == "EvaluationPopulationsConfigurationLoader" )
+	{
+		return new EvaluationPopulationsConfigurationLoader();
 	}
 #endif
     //###DO-NOT-DELETE-THIS-LINE###TAG:SWITCH###//
