@@ -20,9 +20,9 @@ EvaluationPopulationsWorldObserver::EvaluationPopulationsWorldObserver( World *_
     this->genomeHaut = "MeilleurTypeHaut.txt";
     this->genomeBas = "MeilleurTypeBas.txt";
     this->genomeComplet = "MeilleurComplet.txt";
-    this->nbOfH = 2;
-    this->nbOfB = 2;
-    this->nbOfComplet = 0;
+    this->nbOfH = 0;
+    this->nbOfB = 0;
+    this->nbOfComplet = 4;
     this->pointCount = 0;
     this->nbAgent = 4;
     this->depotMin = 400;

@@ -37,7 +37,7 @@ MyOwnProjectWorldObserver::MyOwnProjectWorldObserver( World *__world ) : WorldOb
     this->genSize = 23*10+10*10+10*3;
     this->generation=0;
     this->cptName=0;
-    this->evalType = 2;
+    this->evalType = 0;
     this->numberMaxOfGen = 2000;
     std::vector<Specie> s(this->nbPop,Specie(this->genSize));
     this->s = s;
@@ -101,20 +101,21 @@ void MyOwnProjectWorldObserver::stepPre()
                 
                 if(p.y>depotMin && p.y < rampeYMax){
 
-                    
-                    /*int id = PhysicalObjectFactory::getNextId();
-                    MyEnergyItem *object = new MyEnergyItem(id);
-                    gPhysicalObjects.push_back( object );
-                    object->setDisplayColor(64,192,255);
-                    object->setType(1);
-                    double objYMin = 700;
-                    double objYMax = 750;
-                    object->relocate(objYMin,objYMax,true);*/
                     if(this->evalType == 1){
                         //std::cout << "Dropped in slope!\n";
 
                         this->addPoint(20000);
-                    }
+                    }else{
+                        int id = PhysicalObjectFactory::getNextId();
+                        MyEnergyItem *object = new MyEnergyItem(id);
+                        gPhysicalObjects.push_back( object );
+                        object->setDisplayColor(64,192,255);
+                        object->setType(1);
+                        double objYMin = 700;
+                        double objYMax = 750;
+                        object->relocate(objYMin,objYMax,true);
+                        this->removePoint(10000);
+		            }
                 }else if(p.y>nestYMin && p.y < nestYMax)
                 {                    
                     //std::cout << "Dropped in nest!\n";
@@ -144,16 +145,14 @@ void MyOwnProjectWorldObserver::stepPre()
 
         evaluation();
         //Reset
-        if ( gWorld->getIterations() % 10000 == 0 )
+        if ( gWorld->getIterations() % 25000 == 0 )
         {
             this->s[this->popEtu].setFitness(this->getPoint());
             this->resetPoint();
+            std::cout << "Fitness de : " << this->s[this->popEtu].getName() << ":" << this->s[this->popEtu].getFitness()<<"\n";
             this->popEtu = this->popEtu+1;
             if(this->popEtu == this->nbPop){
                 this->generation = this->generation+1;
-                for ( int i = 0 ; i < this->nbPop ; i ++){
-                    std::cout << "Fitness de : " << s[i].getName() << ":" << this->s[i].getFitness()<<"\n";
-                }
                 std::cout << "Evolution de populations\n";
                 std::cout << "Gen :" << this->generation-1<<"\n";
                 this->popEtu = 0;
@@ -162,7 +161,6 @@ void MyOwnProjectWorldObserver::stepPre()
                 newS = this->selectionTournoi(this->s,newS,s.size()*0.7);
                 newS = this->mutation(newS,1,0.5);
                 newS = this->remplirRandom(newS,s.size()*0.6);
-                //newS = this->ajouterCroisement(this->s,newS,this->nbPop*0.8,this->nbPop);
                 //Mutation
                 this->s=newS;
                 writeFile();
@@ -270,7 +268,7 @@ void MyOwnProjectWorldObserver::initObjects(){
         
         }else{
             gPhysicalObjects[i]->hide();
-            //gPhysicalObjects[i]->setDisplayColor(100,100,100);
+            gPhysicalObjects[i]->setDisplayColor(100,0,200);
             gPhysicalObjects[i]->unregisterObject();
         }
     }
@@ -370,7 +368,7 @@ void MyOwnProjectWorldObserver::evaluationNormale(){
         
         Point2d p = controller->getPosition();
         if(controller->getObjCollected() == true && controller->getIsObserved() == false){
-            this->addPoint(15000);
+            this->addPoint(5000);
             controller->setIsObserved(true);
         }
         if(controller->getObjCollected() == true )
@@ -469,7 +467,15 @@ void MyOwnProjectWorldObserver::writeFile(){
         
     std::vector<float> ga = this->s[iMin].getAgent();
     ofstream myfile;
-    myfile.open("Resultat.txt");
+    if(this->evalType == 0){
+        myfile.open("ResultatComplet.txt");
+    }
+    else if(this->evalType == 1){
+        myfile.open("ResultatHaut.txt");
+    }
+    else{
+        myfile.open("ResultatBas.txt");
+    }
     myfile << "Generation :" << this->generation;
     if(this->evalType == 0){
         myfile << " type complet";
