@@ -145,7 +145,7 @@ void MyOwnProjectWorldObserver::stepPre()
 
         evaluation();
         //Reset
-        if ( gWorld->getIterations() % 25000 == 0 )
+        if ( gWorld->getIterations() % 50000 == 0 )
         {
             this->s[this->popEtu].setFitness(this->getPoint());
             this->resetPoint();
@@ -272,27 +272,6 @@ void MyOwnProjectWorldObserver::initObjects(){
             gPhysicalObjects[i]->unregisterObject();
         }
     }
-    /*gPhysicalObjects.empty();
-    for (int i = 0 ; i < gPhysicalObjects.size() ; i++){
-        std::cout << i<<":"<<gPhysicalObjects.size() <<"\n";
-        if(gPhysicalObjects[i]){
-            std::cout << i<<":"<<gPhysicalObjects.size() <<"\n";
-            gPhysicalObjects[i]->relocate();
-        }
-        
-    }*//*
-    for ( int i = 0 ; i < nbObjectsTotal ; i++ )
-    {
-        // * create a new (custom) object
-        
-        int id = PhysicalObjectFactory::getNextId();
-        MyEnergyItem *object = new MyEnergyItem(id);
-        gPhysicalObjects.push_back( object );
-        object->setDisplayColor(64,192,255);
-        object->setType(1);
-        object->setRegion(OFFSET,RANGE);
-        object->relocate();
-    }*/
 }
 
 void MyOwnProjectWorldObserver::initAgents(int nbAgent,Specie p){
