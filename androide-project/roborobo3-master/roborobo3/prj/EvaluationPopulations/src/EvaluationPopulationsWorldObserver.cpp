@@ -20,17 +20,19 @@ EvaluationPopulationsWorldObserver::EvaluationPopulationsWorldObserver( World *_
     this->genomeHaut = "Comportements/MeilleurTypeHaut.txt";
     this->genomeBas = "Comportements/MeilleurTypeBas.txt";
     this->genomeComplet = "Comportements/MeilleurComplet.txt";
-    this->nbOfH = 2;
+    this->nbOfH = 8;
     this->nbOfB = 2;
     this->nbOfComplet = 0;
     this->pointCount = 0;
-    this->nbAgent = 4;
+    this->nbAgent = 10;
     this->depotMin = 400;
     this->depotMax = 450;
     this->rampeYMin=450;
     this->rampeYMax=700;
     this->nestYMin=950;
     this->nestYMax=1000;
+    this->it =0;
+    this->itPop = 0;
     this->set = false;/*
     this->nbIter = 10000;
     this->nbPop = this->nbAgent;
@@ -74,6 +76,26 @@ void EvaluationPopulationsWorldObserver::initPost()
 
 void EvaluationPopulationsWorldObserver::stepPre()
 {
+    this->it++;
+    if(this->it%10000 == 9999){
+        std :: cout << "Nb H " << this->nbOfH<< " Nb B " << this->nbOfB <<"\n";
+        std :: cout << "Point : "<<this->getPoint() <<"\n";
+        this->resetPoint();
+        this->itPop ++;
+        if(this->nbOfH > 0  && this->itPop == 5){
+            this->itPop = 0;
+            this->nbOfH--;
+            this->nbOfB++;
+        }
+        this->set = false;
+        if(this->nbOfH ==0){
+            char str [80];
+            int i;
+
+            printf (".: ");
+            scanf ("%79s",str);
+        }
+    }
     /*if(this->it %this->nbIter == 0){
         this->result.push_back(this->getPoint())*/
         if(!this->set){
@@ -98,10 +120,10 @@ void EvaluationPopulationsWorldObserver::stepPre()
                 
                 (*robot).setCoordReal(random01()*800+100 , random01()*100+850  );
                 EvaluationPopulationsController *controller = ((EvaluationPopulationsController*)(gWorld->getRobot(i)->getController()));
-                std::cout << "Genome set :\n";
+                /*std::cout << "Genome set :\n";
                 for (auto i = controller->getGenome().begin(); i != controller->getGenome().end(); ++i)
                     std::cout << *i << ' ';
-                std::cout <<"\n";
+                std::cout <<"\n";*/
             }
             this->set = true;
                 
@@ -265,25 +287,25 @@ void EvaluationPopulationsWorldObserver::readGenomeFile(std::string f,int iAgent
             for(int i = 0 ; i < l.size()-1 ; i++){
                 nb= nb+ l[i]*l[i+1];
             }
-            std::cout << "Layer set\n";
+            //std::cout << "Layer set\n";
         }
         if(i==3){
             vector<string> result={}; 
             boost::split(result, s, boost::is_any_of(" ")); 
-            cout << "Génome : \n";
+            //cout << "Génome : \n";
             for (int i = 0; i < result.size(); i++){
                 if(result[i] != ""){
-                    cout << result[i]<<"-";
+                    //cout << result[i]<<"-";
                     g.push_back(std::stof(result[i]));
                 }
             }
             if(g.size() <nb){
-                std::cout << "size : " << g.size() << "instead of :" << nb<<"\n";
-                cout << "Error\n";
+                //std::cout << "size : " << g.size() << "instead of :" << nb<<"\n";
+                //cout << "Error\n";
             }
             else if(g.size()>nb){
-                std::cout << "size : " << g.size() << "instead of :" << nb<<"\n";
-                cout << "Error\n";
+                //std::cout << "size : " << g.size() << "instead of :" << nb<<"\n";
+                //cout << "Error\n";
             }
             controller->setGenome(g);
         }

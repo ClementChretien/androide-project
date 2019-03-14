@@ -29,6 +29,8 @@ class EvaluationPopulationsWorldObserver : public WorldObserver
 		int rampeYMax;
 		int nestYMin;
 		int nestYMax;
+		int it;
+        int itPop;
     	string genomeHaut;
     	string genomeBas;
     	string genomeComplet;

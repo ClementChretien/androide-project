@@ -342,10 +342,10 @@ void EvaluationPopulationsController::setGenome(std::vector<float> g){
         //std::cout << i << g.size()<<"\n";
         this->genome[i]=g[i];
     }
-    std::cout << "Genome set inside controller\n";
+    /*std::cout << "Genome set inside controller\n";
     for (auto i = this->genome.begin(); i != this->genome.end(); ++i)
         std::cout << *i << ' ';
-    std::cout <<"\n";
+    std::cout <<"\n";*/
 }
 std::vector<float> EvaluationPopulationsController::getGenome(){
     return this->genome;
