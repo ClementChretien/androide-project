@@ -37,7 +37,7 @@ MyOwnProjectWorldObserver::MyOwnProjectWorldObserver( World *__world ) : WorldOb
     this->genSize = 23*10+10*10+10*3;
     this->generation=0;
     this->cptName=0;
-    this->evalType = 0;
+    this->evalType = 2;
     this->numberMaxOfGen = 2000;
     std::vector<Specie> s(this->nbPop,Specie(this->genSize));
     this->s = s;
@@ -54,10 +54,7 @@ MyOwnProjectWorldObserver::~MyOwnProjectWorldObserver()
 
 void MyOwnProjectWorldObserver::initPre()
 {
-    int nbObjectsTotal = 50;
-    if(this->evalType == 2){
-        nbObjectsTotal = 20;
-    }
+    int nbObjectsTotal = 100;
     for ( int i = 0 ; i < nbObjectsTotal ; i++ )
     {
         // * create a new (custom) object
@@ -67,13 +64,8 @@ void MyOwnProjectWorldObserver::initPre()
         gPhysicalObjects.push_back( object );
         object->setDisplayColor(64,192,255);
         object->setType(1);
-        if(this->evalType == 2){
-            object->relocate(rampeYMax,rampeYMax+75,true);
-        }
-        else{
-            object->setRegion(0.0,0.2);
-            object->relocate(50,300,true);
-        }
+        object->setRegion(0.0,0.2);
+        object->relocate(50,300,true);
         
     }
 }
@@ -114,7 +106,7 @@ void MyOwnProjectWorldObserver::stepPre()
                         double objYMin = 700;
                         double objYMax = 750;
                         object->relocate(objYMin,objYMax,true);
-                        this->removePoint(10000);
+                        //this->removePoint(10000);
 		            }
                 }else if(p.y>nestYMin && p.y < nestYMax)
                 {                    
@@ -145,7 +137,7 @@ void MyOwnProjectWorldObserver::stepPre()
 
         evaluation();
         //Reset
-        if ( gWorld->getIterations() % 50000 == 0 )
+        if ( gWorld->getIterations() % 20000 == 0 )
         {
             this->s[this->popEtu].setFitness(this->getPoint());
             this->resetPoint();
@@ -184,6 +176,15 @@ void MyOwnProjectWorldObserver::stepPre()
                 controller->init();
                 //std::cout << "Reset Robot Done\n";
                 
+            }
+            for ( int i = 0 ; i < 2 ; i ++){
+                
+                    Robot *robot = (gWorld->getRobot(this->nbAgent+i));
+                    
+                    (*robot).setCoordReal( random01()*800+100 , random01()*50+50  );
+                    
+                    MyOwnProjectController *controller = ((MyOwnProjectController*)(gWorld->getRobot(this->nbAgent+i)->getController()));
+                    readGenomeFile("Comportements/MeilleurTypeHaut.txt",this->nbAgent+i);
             }
             this->initObjects();
             /*for (int i = 0 ; i != 5 ; i++){
@@ -239,11 +240,8 @@ void MyOwnProjectWorldObserver::stepPre()
     
 }
 void MyOwnProjectWorldObserver::initObjects(){
-    int nbObj = 50;
+    int nbObj = 100;
 
-    if(this->evalType == 2){
-        nbObj = 20;
-    }
     for (int i = 0 ; i < gPhysicalObjects.size() ; i++){
         if(i >= gPhysicalObjects.size() - nbObj){
                 
@@ -252,15 +250,8 @@ void MyOwnProjectWorldObserver::initObjects(){
                 //std::cout << i<<":"<<gPhysicalObjects.size() <<"\n";
                 //gPhysicalObjects[i]->setRegion(0.0,0.2);
                 MyEnergyItem *e = ((MyEnergyItem*)gPhysicalObjects[i]);
-                if(this->evalType == 2){
-                    //std::cout << "Relocate";
-                    e->relocate(rampeYMax,rampeYMax+75,true);
-                    //std::cout << "Relocate2\n";
-                }
-                else{
-                    e->setRegion(0.0,0.2);
-                    e->relocate(50,300,false);
-                }
+                e->setRegion(0.0,0.2);
+                e->relocate(50,300,false);
             }
             else{
                 std::cout << "Found\n";
@@ -469,4 +460,58 @@ void MyOwnProjectWorldObserver::writeFile(){
         myfile <<ga[l] <<" ";
     }
     myfile.close();
+}
+void MyOwnProjectWorldObserver::readGenomeFile(std::string f,int iAgent){
+    
+    MyOwnProjectController *controller = ((MyOwnProjectController*)(gWorld->getRobot(iAgent)->getController()));
+    
+    controller->init();
+    std::ifstream inFile(f);
+    //inFile.open(f);
+    if(!inFile){
+        std::cout << "Cannot open";
+    }
+    std::string s="";
+    int i =0;
+    int nb = -1;
+
+
+    std::vector<int> l{};
+    std::vector<float> g{};
+    while(std::getline(inFile,s)){
+        /*std::cout << "debut boucle\n";
+        std::cout << s <<":::\n";*/
+        if(i == 2){
+            vector<string> result={}; 
+            boost::split(result, s, boost::is_any_of(",")); 
+        
+            for (int i = 0; i < result.size(); i++){
+                l.push_back(std::stoi(result[i])); 
+            }
+            controller->setLayers(l);
+            for(int i = 0 ; i < l.size()-1 ; i++){
+                nb= nb+ l[i]*l[i+1];
+            }
+            //std::cout << "Layer set\n";
+        }
+        if(i==3){
+            vector<string> result={}; 
+            boost::split(result, s, boost::is_any_of(" ")); 
+            //cout << "Génome : \n";
+            for (int i = 0; i < result.size(); i++){
+                if(result[i] != ""){
+                    //cout << result[i]<<"-";
+                    g.push_back(std::stof(result[i]));
+                }
+            }
+            controller->setGenome(g);
+        }
+            
+        i=i+1;
+        if( i>3){
+            break;
+        }
+    }
+    inFile.close();
+    controller->init();
 }
