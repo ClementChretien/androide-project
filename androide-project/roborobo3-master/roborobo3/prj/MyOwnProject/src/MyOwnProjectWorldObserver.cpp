@@ -441,6 +441,7 @@ void MyOwnProjectWorldObserver::stepPost()
 {
 }
 
+
 void MyOwnProjectWorldObserver::writeFile(){
     int iMin =-1;
     int vMin = -1;
@@ -450,31 +451,134 @@ void MyOwnProjectWorldObserver::writeFile(){
             vMin = s[j].getFitness();
         }
     }
-
+    if(this->evalType == 0 && vMin < getFitness("ResultatHaut.txt")){
+        cout << "Not better\n";
+    }
+    else if(this->evalType == 1 && vMin < getFitness("ResultatHaut.txt")){
+        cout << "Not better\n";
+    }
+    else if (vMin < getFitness("ResultatBas.txt")){
+        cout << "Not better\n";
+    }
+    else{       
+        cout <<getFitness("ResultatBas.txt")<< " better     \n";
+        std::vector<float> ga = this->s[iMin].getAgent();
+        ofstream myfile;
+        if(this->evalType == 0){
+            myfile.open("ResultatComplet.txt");
+        }
+        else if(this->evalType == 1){
+            myfile.open("ResultatHaut.txt");
+        }
+        else{
+            myfile.open("ResultatBas.txt");
+        }
+        myfile << "Generation :" << this->generation;
+        if(this->evalType == 0){
+            myfile << " type complet";
+        }else if(this->evalType == 1){
+            myfile << " type Haut";
+        } else if(this->evalType == 2){
+            myfile << " type Bas";
+        }
+        myfile << "\n" << vMin << "\n";
+        for (int j = 0 ; j < this->layers.size() ; j ++){
+            if(j==this->layers.size()-1){
+                myfile<<this->layers[j]<<"\n";
+            }
+            else{
+                myfile<<this->layers[j]<<",";
+            }
+        }
         
-    std::vector<float> ga = this->s[iMin].getAgent();
-    ofstream myfile;
-    if(this->evalType == 0){
-        myfile.open("ResultatComplet.txt");
+        for(int l = 0 ; l < ga.size() ; l++){
+            myfile <<ga[l] <<" ";
+        }
+        myfile.close();
     }
-    else if(this->evalType == 1){
-        myfile.open("ResultatHaut.txt");
-    }
-    else{
-        myfile.open("ResultatBas.txt");
-    }
-    myfile << "Generation :" << this->generation;
-    if(this->evalType == 0){
-        myfile << " type complet";
-    }else if(this->evalType == 1){
-        myfile << " type Haut";
-    } else if(this->evalType == 2){
-        myfile << " type Bas";
-    }
-    myfile << "\n Fitness :" << vMin << "\n";
+}
+void MyOwnProjectWorldObserver::readGenomeFile(std::string f,int iAgent){
     
-    for(int l = 0 ; l < ga.size() ; l++){
-        myfile <<ga[l] <<" ";
+    MyOwnProjectController *controller = ((MyOwnProjectController*)(gWorld->getRobot(iAgent)->getController()));
+    
+    controller->init();
+    std::ifstream inFile(f);
+    //inFile.open(f);
+    if(!inFile){
+        std::cout << "Cannot open";
     }
-    myfile.close();
+    std::string s="";
+    int i =0;
+    int nb = -1;
+
+
+    std::vector<int> l{};
+    std::vector<float> g{};
+    while(std::getline(inFile,s)){
+        /*std::cout << "debut boucle\n";
+        std::cout << s <<":::\n";*/
+        if(i == 2){
+            vector<string> result={}; 
+            boost::split(result, s, boost::is_any_of(",")); 
+        
+            for (int i = 0; i < result.size(); i++){
+                l.push_back(std::stoi(result[i])); 
+            }
+            controller->setLayers(l);
+            for(int i = 0 ; i < l.size()-1 ; i++){
+                nb= nb+ l[i]*l[i+1];
+            }
+            //std::cout << "Layer set\n";
+        }
+        if(i==3){
+            vector<string> result={}; 
+            boost::split(result, s, boost::is_any_of(" ")); 
+            //cout << "Génome : \n";
+            for (int i = 0; i < result.size(); i++){
+                if(result[i] != ""){
+                    //cout << result[i]<<"-";
+                    g.push_back(std::stof(result[i]));
+                }
+            }
+            controller->setGenome(g);
+        }
+            
+        i=i+1;
+        if( i>3){
+            break;
+        }
+    }
+    inFile.close();
+    controller->init();
+}
+int MyOwnProjectWorldObserver::getFitness(std::string f){
+    
+    
+    std::ifstream inFile(f);
+    //inFile.open(f);
+    if(!inFile){
+        std::cout << "Cannot open";
+    }
+    std::string s="";
+    int i =0;
+    int nb = -1;
+
+
+    std::vector<int> l{};
+    std::vector<float> g{};
+    while(std::getline(inFile,s)){
+        /*std::cout << "debut boucle\n";
+        std::cout << s <<":::\n";*/
+        if(i == 1){
+            vector<string> result={}; 
+            boost::split(result, s, boost::is_any_of(" ")); 
+        
+            for (int i = 0; i < result.size(); i++){
+                cout << "GetFitness :" << result[i]<<"\n";
+                return std::stoi(result[i]);
+            }
+        }
+        i++;
+    }
+    inFile.close();
 }

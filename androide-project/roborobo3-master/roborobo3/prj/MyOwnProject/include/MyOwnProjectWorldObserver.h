@@ -8,6 +8,8 @@
 
 #include "Observers/WorldObserver.h"
 #include "MyOwnProject/include/Specie.h"
+#include <bits/stdc++.h> 
+#include <boost/algorithm/string.hpp> 
 
 class World;
 
@@ -55,6 +57,8 @@ class MyOwnProjectWorldObserver : public WorldObserver
     	void initObjects();
 
 		void writeFile();
+		void readGenomeFile(std::string f,int iAgent);
+		int getFitness(std::string f);
 };
 
 #endif
