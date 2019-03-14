@@ -95,6 +95,7 @@ void EvaluationPopulationsWorldObserver::stepPre()
             printf (".: ");
             scanf ("%79s",str);
         }
+        this->initObjects();
     }
     /*if(this->it %this->nbIter == 0){
         this->result.push_back(this->getPoint())*/
