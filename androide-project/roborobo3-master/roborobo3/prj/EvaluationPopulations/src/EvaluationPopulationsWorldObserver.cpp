@@ -20,9 +20,9 @@ EvaluationPopulationsWorldObserver::EvaluationPopulationsWorldObserver( World *_
     this->genomeHaut = "Comportements/MeilleurTypeHaut.txt";
     this->genomeBas = "Comportements/MeilleurTypeBas.txt";
     this->genomeComplet = "Comportements/MeilleurComplet.txt";
-    this->nbOfH = 0;
-    this->nbOfB = 0;
-    this->nbOfComplet = 4;
+    this->nbOfH = 2;
+    this->nbOfB = 2;
+    this->nbOfComplet = 0;
     this->pointCount = 0;
     this->nbAgent = 4;
     this->depotMin = 400;
@@ -129,6 +129,14 @@ void EvaluationPopulationsWorldObserver::stepPre()
                 double objYMin = 700;
                 double objYMax = 750;
                 object->relocate(objYMin,objYMax,true);
+                int id2 = PhysicalObjectFactory::getNextId();
+                EvalMyEnergyItem *object2 = new EvalMyEnergyItem(id2);
+                gPhysicalObjects.push_back( object2 );
+                object2->setDisplayColor(64,192,255);
+                object2->setType(1);
+                objYMin = 50;
+                objYMax = 300;
+                object2->relocate(objYMin,objYMax,true);
             }else if(p.y>nestYMin && p.y < nestYMax)
             {                    
                 this->addPoint();

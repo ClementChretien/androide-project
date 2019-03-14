@@ -115,6 +115,14 @@ void MyOwnProjectWorldObserver::stepPre()
                         double objYMax = 750;
                         object->relocate(objYMin,objYMax,true);
                         this->removePoint(10000);
+                        int id2 = PhysicalObjectFactory::getNextId();
+                        MyEnergyItem *object2 = new MyEnergyItem(id2);
+                        gPhysicalObjects.push_back( object2 );
+                        object2->setDisplayColor(64,192,255);
+                        object2->setType(1);
+                        objYMin = 50;
+                        objYMax = 300;
+                        object2->relocate(objYMin,objYMax,true);
 		            }
                 }else if(p.y>nestYMin && p.y < nestYMax)
                 {                    
