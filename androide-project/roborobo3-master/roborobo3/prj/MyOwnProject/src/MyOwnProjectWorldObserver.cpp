@@ -451,7 +451,7 @@ void MyOwnProjectWorldObserver::writeFile(){
             vMin = s[j].getFitness();
         }
     }
-    if(this->evalType == 0 && vMin < getFitness("ResultatHaut.txt")){
+    if(this->evalType == 0 && vMin < getFitness("ResultatComplet.txt")){
         cout << "Not better\n";
     }
     else if(this->evalType == 1 && vMin < getFitness("ResultatHaut.txt")){
@@ -558,6 +558,7 @@ int MyOwnProjectWorldObserver::getFitness(std::string f){
     //inFile.open(f);
     if(!inFile){
         std::cout << "Cannot open";
+        return -1;
     }
     std::string s="";
     int i =0;

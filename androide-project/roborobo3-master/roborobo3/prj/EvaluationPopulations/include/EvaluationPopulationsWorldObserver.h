@@ -18,11 +18,14 @@ class World;
 class EvaluationPopulationsWorldObserver : public WorldObserver
 {	
 	protected:
+
+    	std::vector<int> combinaison;
 		int pointCount;
 		int nbAgent;
 		int nbOfB;
 		int nbOfH;
 		int nbOfComplet;
+		int nbOfRandom;
 		int depotMin;
 		int depotMax;
 		int rampeYMin;
@@ -34,7 +37,9 @@ class EvaluationPopulationsWorldObserver : public WorldObserver
     	string genomeHaut;
     	string genomeBas;
     	string genomeComplet;
+    	string genomeRandom;
 		bool set;
+
 	public:
 		EvaluationPopulationsWorldObserver( World *__world );
 		~EvaluationPopulationsWorldObserver();

@@ -17,25 +17,19 @@ using namespace std;
 
 EvaluationPopulationsController::EvaluationPopulationsController( RobotWorldModel *__wm ) : Controller ( __wm )
 {
-    std::cout << "init agent \n";
     if ( _wm->_cameraSensorsNb != NB_SENSORS )
     {
         std::cerr << "[CRITICAL] This project assumes robot specifications with " << NB_SENSORS << " sensors (provided: " << _wm->_cameraSensorsNb << " sensors). STOP.\n";
         exit(-1);
     }
     init();
-    std::cout << "init agent 2\n";
     std::vector<float> genome{1};
-    std::cout << "init agent 3\n";
     this->genome = genome;
     this->genome.resize(17*3,0);
-    std::cout << "init agent 4\n";
     std::vector<int> layers{17,3};
     this->layers = layers;
-    std::cout << "init agent 5\n";
     size_t nbParams = 14;
     _params.resize(nbParams,0); // initialize an array with zero values.
-    std::cout << "init agent 6\n";
 }
 void EvaluationPopulationsController::init(){
     this->setObjCollected(false);

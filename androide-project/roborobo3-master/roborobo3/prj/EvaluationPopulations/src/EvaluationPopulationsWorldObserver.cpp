@@ -20,11 +20,13 @@ EvaluationPopulationsWorldObserver::EvaluationPopulationsWorldObserver( World *_
     this->genomeHaut = "Comportements/MeilleurTypeHaut.txt";
     this->genomeBas = "Comportements/MeilleurTypeBas.txt";
     this->genomeComplet = "Comportements/MeilleurComplet.txt";
-    this->nbOfH = 8;
-    this->nbOfB = 2;
+    this->genomeRandom = "Comportements/Random.txt";
+    this->nbOfH = 0;
+    this->nbOfB = 0;
     this->nbOfComplet = 0;
+    this->nbOfRandom = 0;
     this->pointCount = 0;
-    this->nbAgent = 10;
+    this->nbAgent = 5;
     this->depotMin = 400;
     this->depotMax = 450;
     this->rampeYMin=450;
@@ -33,14 +35,30 @@ EvaluationPopulationsWorldObserver::EvaluationPopulationsWorldObserver( World *_
     this->nestYMax=1000;
     this->it =0;
     this->itPop = 0;
-    this->set = false;/*
+    this->set = false;  
+    //std::vector<int> v{5,0,0,0};
+    /*
     this->nbIter = 10000;
     this->nbPop = this->nbAgent;
     std::vector<int>l{};
     this->resultats = l;
     std::vector<std::string>l2{};
     this->type = l2;*/
-    std::cout << "Init\n";
+    std::cout << "\n\n\nInit\n\n\n";
+    int c = 0; 
+    for(int r = 0 ; r < this->nbAgent+1 ; r++){
+        for(int b = 0 ; b < this->nbAgent+1-r ; b++){
+            for(int h = 0 ; h < this->nbAgent+1-r-b ; h++){
+                std::cout << "R/B/C/H" << r <<"/"<< b <<"/"<< c <<"/"<< h <<"\n";
+                c = this->nbAgent - r - b - h;
+                this->combinaison.push_back(r);
+                this->combinaison.push_back(b);
+                this->combinaison.push_back(c);
+                this->combinaison.push_back(h);
+                //this->combinaison.push_back({r,b,c,h});
+            }
+        }
+    }
 }
 
 
@@ -76,59 +94,80 @@ void EvaluationPopulationsWorldObserver::initPost()
 
 void EvaluationPopulationsWorldObserver::stepPre()
 {
-    this->it++;
-    if(this->it%10000 == 9999){
-        std :: cout << "Nb H " << this->nbOfH<< " Nb B " << this->nbOfB <<"\n";
-        std :: cout << "Point : "<<this->getPoint() <<"\n";
-        this->resetPoint();
-        this->itPop ++;
-        if(this->nbOfH > 0  && this->itPop == 5){
-            this->itPop = 0;
-            this->nbOfH--;
-            this->nbOfB++;
+    if(this->it%10000 == 0){
+        if(this->itPop%6 == 0){
+            this->itPop = 1;
+            std :: cout << "Nb R " << this->nbOfRandom<< " Nb B " << this->nbOfB << "Nb C " << this->nbOfComplet<< " Nb H " << this->nbOfH <<"\n";
+            std :: cout << "Point : "<<this->getPoint()/6 <<"\n";
+            int h = this->combinaison.back();
+            this->nbOfH = h;
+            this->combinaison.pop_back();
+            int c = this->combinaison.back();
+            this->nbOfComplet = c;
+            this->combinaison.pop_back();
+            int b = this->combinaison.back();
+            this->nbOfB = b;
+            this->combinaison.pop_back();
+            int r = this->combinaison.back();
+            this->nbOfRandom = r;
+            this->combinaison.pop_back();
+            //std :: cout << "New R " << r<< " Nb B " << b << "Nb C " << c<< " Nb H " << h <<"\n";
+            
+            this->resetPoint();
         }
         this->set = false;
-        if(this->nbOfH ==0){
+        /*if(this->nbOfH ==0){
             char str [80];
             int i;
 
             printf (".: ");
             scanf ("%79s",str);
-        }
+        }*/
         this->initObjects();
+        this->itPop ++;
     }
     /*if(this->it %this->nbIter == 0){
         this->result.push_back(this->getPoint())*/
-        if(!this->set){
-            int nbBas = 0;
-            int nbHaut = 0;
-            int nbComp = 0;
-            for ( int i = this->nbAgent-1 ; i !=-1 ; i-- )
-            {
-                if(nbComp<this->nbOfComplet){
-                    this->readGenomeFile(this->genomeComplet,i);
-                    nbComp++;
-                }
-                else if(nbBas < this->nbOfB){
-                    this->readGenomeFile(this->genomeBas,i);
-                    nbBas++;
-                }
-                else if(nbHaut < this->nbOfH){
-                    this->readGenomeFile(this->genomeHaut,i);
-                    nbHaut++;
-                }
-                Robot *robot = (gWorld->getRobot(i));
-                
-                (*robot).setCoordReal(random01()*800+100 , random01()*100+850  );
-                EvaluationPopulationsController *controller = ((EvaluationPopulationsController*)(gWorld->getRobot(i)->getController()));
-                /*std::cout << "Genome set :\n";
-                for (auto i = controller->getGenome().begin(); i != controller->getGenome().end(); ++i)
-                    std::cout << *i << ' ';
-                std::cout <<"\n";*/
+    if(!this->set){
+        int nbBas = 0;
+        int nbHaut = 0;
+        int nbComp = 0;
+        int nbRand = 0;
+        for ( int i = this->nbAgent-1 ; i !=-1 ; i-- )
+        {
+            if(nbComp!=this->nbOfComplet){
+                this->readGenomeFile(this->genomeComplet,i);
+                //std::cout <<nbComp<<"/"<<this->nbOfComplet<<"nbComp\n";
+                nbComp++;
             }
-            this->set = true;
-                
+            else if(nbBas != this->nbOfB){
+                this->readGenomeFile(this->genomeBas,i);
+                //std::cout <<nbBas<<"/"<<this->nbOfB<<"nbComp\n";
+                nbBas++;
+            }
+            else if(nbHaut != this->nbOfH){
+                this->readGenomeFile(this->genomeHaut,i);
+                //std::cout <<nbHaut<<"/"<<this->nbOfH<<"nbComp\n";
+                nbHaut++;
+            }
+            else if(nbRand != this->nbOfRandom){
+                this->readGenomeFile(this->genomeRandom,i);
+                //std::cout <<nbRand<<"/"<<this->nbOfRandom<<"nbComp\n";
+                nbRand++;
+            }
+            Robot *robot = (gWorld->getRobot(i));
+            
+            (*robot).setCoordReal(random01()*800+100 , random01()*100+850  );
+            EvaluationPopulationsController *controller = ((EvaluationPopulationsController*)(gWorld->getRobot(i)->getController()));
+            /*std::cout << "Genome set :\n";
+            for (auto i = controller->getGenome().begin(); i != controller->getGenome().end(); ++i)
+                std::cout << *i << ' ';
+            std::cout <<"\n";*/
         }
+        this->set = true;
+            
+    }
+    this->it++;
     //}
     //cout << "aa\n";
     for ( int i = 0 ; i != gWorld->getNbOfRobots() ; i++ )
@@ -265,7 +304,7 @@ void EvaluationPopulationsWorldObserver::readGenomeFile(std::string f,int iAgent
     std::ifstream inFile(f);
     //inFile.open(f);
     if(!inFile){
-        std::cout << "Cannot open";
+        std::cout << "Cannot open : "<< f <<"\n";
     }
     std::string s="";
     int i =0;
