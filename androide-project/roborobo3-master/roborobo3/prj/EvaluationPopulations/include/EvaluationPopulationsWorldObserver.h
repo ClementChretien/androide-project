@@ -34,6 +34,7 @@ class EvaluationPopulationsWorldObserver : public WorldObserver
 		int nestYMax;
 		int it;
         int itPop;
+		int nbOfEtuPerComb;
     	string genomeHaut;
     	string genomeBas;
     	string genomeComplet;
@@ -61,6 +62,7 @@ class EvaluationPopulationsWorldObserver : public WorldObserver
 
 		void writeFile(std::vector<int> s);
 		void readGenomeFile(std::string f,int iAgent);
+		void addResultFile(std::string f, std::string r);
 		
 };
 

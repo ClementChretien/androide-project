@@ -11,7 +11,7 @@
 #include "World/SquareObject.h"
 #include "WorldModels/RobotWorldModel.h"
 #include "EvaluationPopulations/include/EvalMyEnergyItem.h"
-
+#include <fstream>
 
 
 EvaluationPopulationsWorldObserver::EvaluationPopulationsWorldObserver( World *__world ) : WorldObserver( __world )
@@ -27,6 +27,7 @@ EvaluationPopulationsWorldObserver::EvaluationPopulationsWorldObserver( World *_
     this->nbOfRandom = 0;
     this->pointCount = 0;
     this->nbAgent = 5;
+    this->nbOfEtuPerComb = 5;
     this->depotMin = 400;
     this->depotMax = 450;
     this->rampeYMin=450;
@@ -94,11 +95,17 @@ void EvaluationPopulationsWorldObserver::initPost()
 
 void EvaluationPopulationsWorldObserver::stepPre()
 {
-    if(this->it%10000 == 0){
+    if(this->it%50000 == 0){
         if(this->itPop%6 == 0){
             this->itPop = 1;
-            std :: cout << "Nb R " << this->nbOfRandom<< " Nb B " << this->nbOfB << "Nb C " << this->nbOfComplet<< " Nb H " << this->nbOfH <<"\n";
-            std :: cout << "Point : "<<this->getPoint()/6 <<"\n";
+            std :: cout << "R/B/C/H : " << this->nbOfRandom<< "/" << this->nbOfB << "/" << this->nbOfComplet<< "/" << this->nbOfH <<" : ";
+            std :: cout <<this->getPoint()/this->nbOfEtuPerComb <<"\n";
+            std::string result = std::to_string(this->nbOfRandom)+ "/" + std::to_string(this->nbOfB) + "/" + std::to_string(this->nbOfComplet)+ "/" + std::to_string(this->nbOfH) +" "+std::to_string((this->getPoint()/this->nbOfEtuPerComb));
+            if(this->nbOfB == 0 && this->nbOfComplet == 0 && this->nbOfRandom == 0 && this->nbOfH == 0){
+                this->addResultFile("ResultatEval"+std::to_string(this->nbAgent)+".txt","RBCH P");
+            }else{
+                this->addResultFile("ResultatEval"+std::to_string(this->nbAgent)+".txt",result);
+            }
             int h = this->combinaison.back();
             this->nbOfH = h;
             this->combinaison.pop_back();
@@ -136,22 +143,22 @@ void EvaluationPopulationsWorldObserver::stepPre()
         for ( int i = this->nbAgent-1 ; i !=-1 ; i-- )
         {
             if(nbComp!=this->nbOfComplet){
-                this->readGenomeFile(this->genomeComplet,i);
+                this->readGenomeFile("Comportements/MeilleurComplet.txt",i);
                 //std::cout <<nbComp<<"/"<<this->nbOfComplet<<"nbComp\n";
                 nbComp++;
             }
             else if(nbBas != this->nbOfB){
-                this->readGenomeFile(this->genomeBas,i);
+                this->readGenomeFile("Comportements/MeilleurTypeBas.txt",i);
                 //std::cout <<nbBas<<"/"<<this->nbOfB<<"nbComp\n";
                 nbBas++;
             }
             else if(nbHaut != this->nbOfH){
-                this->readGenomeFile(this->genomeHaut,i);
+                this->readGenomeFile("Comportements/MeilleurTypeHaut.txt",i);
                 //std::cout <<nbHaut<<"/"<<this->nbOfH<<"nbComp\n";
                 nbHaut++;
             }
             else if(nbRand != this->nbOfRandom){
-                this->readGenomeFile(this->genomeRandom,i);
+                this->readGenomeFile("Comportements/Random.txt",i);
                 //std::cout <<nbRand<<"/"<<this->nbOfRandom<<"nbComp\n";
                 nbRand++;
             }
@@ -191,14 +198,14 @@ void EvaluationPopulationsWorldObserver::stepPre()
                 double objYMin = 700;
                 double objYMax = 750;
                 object->relocate(objYMin,objYMax,true);
-                int id2 = PhysicalObjectFactory::getNextId();
+                /*int id2 = PhysicalObjectFactory::getNextId();
                 EvalMyEnergyItem *object2 = new EvalMyEnergyItem(id2);
                 gPhysicalObjects.push_back( object2 );
                 object2->setDisplayColor(64,192,255);
                 object2->setType(1);
                 objYMin = 50;
                 objYMax = 300;
-                object2->relocate(objYMin,objYMax,true);
+                object2->relocate(objYMin,objYMax,true);*/
             }else if(p.y>nestYMin && p.y < nestYMax)
             {                    
                 this->addPoint();
@@ -299,7 +306,7 @@ void EvaluationPopulationsWorldObserver::writeFile(std::vector<int> s){
 void EvaluationPopulationsWorldObserver::readGenomeFile(std::string f,int iAgent){
     
     EvaluationPopulationsController *controller = ((EvaluationPopulationsController*)(gWorld->getRobot(iAgent)->getController()));
-    
+    //std::cout << "open : " << f << "\n";
     controller->init();
     std::ifstream inFile(f);
     //inFile.open(f);
@@ -357,4 +364,13 @@ void EvaluationPopulationsWorldObserver::readGenomeFile(std::string f,int iAgent
     }
     inFile.close();
     controller->init();
+}
+void EvaluationPopulationsWorldObserver::addResultFile(std::string f, std::string r){
+    ofstream myfile;
+    myfile.open(f, std::ios_base::app);
+    /*myfile.seekp(0, ios::end);  
+    if (myfile.tellp() == 0) { 
+        myfile << "R/C/B/H : Point\n";
+    }*/
+    myfile << r <<"\n";
 }
