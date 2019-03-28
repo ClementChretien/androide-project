@@ -15,8 +15,8 @@ def calcShapley():
     dic = getTabFile(fName)
     dic1 = getTabFile(f1Name)
     print("End READ")
-    for ag in range(len(agent)+1):
-        print(ag)
+    for ag in range(len(agent)):
+        print(agent[ag])
         somme = 0
         for co in comb:
             toFind6 = str(co[0])+"/"+str(co[1])+"/"+str(co[2])+"/"+str(co[3])
