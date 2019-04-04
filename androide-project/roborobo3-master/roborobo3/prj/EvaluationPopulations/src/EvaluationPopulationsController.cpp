@@ -143,7 +143,7 @@ vector<float> EvaluationPopulationsController::definirEntree(){
     int depotMin = 400;
     int rampeYMin=450;
     int rampeYMax=700;
-    int recupMax = 750;
+    int recupMax = 700;
     int nestYMin=950;
     int nestYMax=1000;
     Point2d p = this->getPosition();
@@ -239,20 +239,13 @@ void EvaluationPopulationsController::step(){
     double minRampSpeed = -0.3;
     double orientation = getOrientation();
     //std::cout << "Translation : "<<normalT<<"\n";
-    if (/*p.x > 250 && p.x < 670 &&*/ p.y > 450&& p.y < 700 && orientation < 0.0){
+    if (/*p.x > 250 && p.x < 670 &&*/ p.y > 450&& p.y < 700){
         if(normalT > maxRampSpeed)
             setTranslation(maxRampSpeed);
         else if (normalT < minRampSpeed)
             setTranslation(minRampSpeed);
         else
             setTranslation(std::min((double)1,normalT));     
-    }
-    else if (/*p.x > 250 && p.x < 670 && */p.y > 450 && p.y < 700 && orientation >= 0.0){
-            if (normalT <= 0.9)
-                normalT += 0.2;
-            else if (normalT >= -0.9)
-                normalT -= 0.2;
-            setTranslation(std::min((double)1,normalT)); 
     }
     else{
         setTranslation(std::min((double)1,normalT));

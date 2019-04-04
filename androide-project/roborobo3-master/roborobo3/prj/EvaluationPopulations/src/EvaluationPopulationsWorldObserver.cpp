@@ -26,7 +26,7 @@ EvaluationPopulationsWorldObserver::EvaluationPopulationsWorldObserver( World *_
     this->nbOfComplet = 0;
     this->nbOfRandom = 0;
     this->pointCount = 0;
-    this->nbAgent = 5;
+    this->nbAgent = 15;
     this->nbOfEtuPerComb = 5;
     this->depotMin = 400;
     this->depotMax = 450;
@@ -70,7 +70,7 @@ EvaluationPopulationsWorldObserver::~EvaluationPopulationsWorldObserver()
 
 void EvaluationPopulationsWorldObserver::initPre()
 {
-    int nbObjectsTotal = 50;
+    int nbObjectsTotal = 100;
     for ( int i = 0 ; i < nbObjectsTotal ; i++ )
     {
         // * create a new (custom) object
@@ -227,7 +227,7 @@ void EvaluationPopulationsWorldObserver::stepPre()
     
 }
 void EvaluationPopulationsWorldObserver::initObjects(){
-    int nbObj = 50;
+    int nbObj = 100;
 
     for (int i = 0 ; i < gPhysicalObjects.size() ; i++){
         if(i >= gPhysicalObjects.size() - nbObj){
