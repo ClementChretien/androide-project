@@ -109,7 +109,7 @@ void EvalMyEnergyItem::relocate()
             std::cout <<"Pb";
         }
         
-    } while ( canRegister() == false && cpt != 10);
+    } while ( canRegister() == false || cpt != 10);
     if(cpt<10){
         registerObject();
     
@@ -155,7 +155,7 @@ bool EvalMyEnergyItem::relocate(double ymin, double ymax,bool ecart)
             
             setCoordinates(x,y);
             
-        } while ( canRegister() == false && cpt != 10);
+        } while ( canRegister() == false || cpt != 10);
     }
      
     if(cpt<10){
@@ -201,7 +201,7 @@ bool EvalMyEnergyItem::relocate(double ymin, double ymax,bool ecart,double offse
             
             setCoordinates(x,y);
                 
-        }  while ( canRegister() == false && cpt != 10);
+        }  while ( canRegister() == false || cpt != 10);
     }
     
     
@@ -248,7 +248,7 @@ bool EvalMyEnergyItem::relocate(double xmin, double xmax, double ymin, double ym
         
         setCoordinates(x,y);
         
-    } while ( canRegister() == false && cpt != 10);
+    } while ( canRegister() == false || cpt != 10);
     
     
     if(cpt<10){
