@@ -26,8 +26,8 @@ EvaluationPopulationsWorldObserver::EvaluationPopulationsWorldObserver( World *_
     this->nbOfComplet = 0;
     this->nbOfRandom = 0;
     this->pointCount = 0;
-    this->nbAgent = 15;
-    this->nbOfEtuPerComb = 5;
+    this->nbAgent = 14;
+    this->nbOfEtuPerComb = 2;
     this->depotMin = 400;
     this->depotMax = 450;
     this->rampeYMin=450;
@@ -95,7 +95,7 @@ void EvaluationPopulationsWorldObserver::initPost()
 
 void EvaluationPopulationsWorldObserver::stepPre()
 {
-    if(this->it%50000 == 0){
+    if(this->it%25000 == 0){
         if(this->itPop%6 == 0){
             this->itPop = 1;
             std :: cout << "R/B/C/H : " << this->nbOfRandom<< "/" << this->nbOfB << "/" << this->nbOfComplet<< "/" << this->nbOfH <<" : ";
