@@ -26,7 +26,7 @@ EvaluationPopulationsWorldObserver::EvaluationPopulationsWorldObserver( World *_
     this->nbOfComplet = 0;
     this->nbOfRandom = 0;
     this->pointCount = 0;
-    this->nbAgent = 14;
+    
     this->nbOfEtuPerComb = 2;
     this->depotMin = 400;
     this->depotMax = 450;
@@ -45,21 +45,8 @@ EvaluationPopulationsWorldObserver::EvaluationPopulationsWorldObserver( World *_
     this->resultats = l;
     std::vector<std::string>l2{};
     this->type = l2;*/
-    std::cout << "\n\n\nInit\n\n\n";
-    int c = 0; 
-    for(int r = 0 ; r < this->nbAgent+1 ; r++){
-        for(int b = 0 ; b < this->nbAgent+1-r ; b++){
-            for(int h = 0 ; h < this->nbAgent+1-r-b ; h++){
-                std::cout << "R/B/C/H" << r <<"/"<< b <<"/"<< c <<"/"<< h <<"\n";
-                c = this->nbAgent - r - b - h;
-                this->combinaison.push_back(r);
-                this->combinaison.push_back(b);
-                this->combinaison.push_back(c);
-                this->combinaison.push_back(h);
-                //this->combinaison.push_back({r,b,c,h});
-            }
-        }
-    }
+
+    
 }
 
 
@@ -83,7 +70,6 @@ void EvaluationPopulationsWorldObserver::initPre()
         object->relocate(50,300,true);
         gPhysicalObjects.push_back( object );        
     }
-
     
     
 }
@@ -95,6 +81,25 @@ void EvaluationPopulationsWorldObserver::initPost()
 
 void EvaluationPopulationsWorldObserver::stepPre()
 {
+    if(this->it == 0){ 
+        std::cout << "\n\n\nInit\n\n\n";
+        int c = 0; 
+        this->nbAgent = gWorld->getNbOfRobots();
+        std::cout << this->nbAgent << " : nombre de robots\n";
+        for(int r = 0 ; r < this->nbAgent+1 ; r++){
+            for(int b = 0 ; b < this->nbAgent+1-r ; b++){
+                for(int h = 0 ; h < this->nbAgent+1-r-b ; h++){
+                    std::cout << "R/B/C/H" << r <<"/"<< b <<"/"<< c <<"/"<< h <<"\n";
+                    c = this->nbAgent - r - b - h;
+                    this->combinaison.push_back(r);
+                    this->combinaison.push_back(b);
+                    this->combinaison.push_back(c);
+                    this->combinaison.push_back(h);
+                    //this->combinaison.push_back({r,b,c,h});
+                }
+            }
+        }
+    }
     if(this->it%25000 == 0){
         if(this->itPop%6 == 0){
             this->itPop = 1;
