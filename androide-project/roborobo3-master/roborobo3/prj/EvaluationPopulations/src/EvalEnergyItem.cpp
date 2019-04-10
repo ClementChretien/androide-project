@@ -83,9 +83,9 @@ void EvalMyEnergyItem::relocate()
     int border = 40;
     
     //double pi = atan(1)*4;
-    
+    int cpt = 0;
     do{
-        
+        cpt=cpt+1;
         double xPos;
         
         xPos = random01() * this->_range + this->_offsetRegion;
@@ -109,11 +109,13 @@ void EvalMyEnergyItem::relocate()
             std::cout <<"Pb";
         }
         
-    } while ( canRegister() == false );
-    
-    registerObject();
+    } while ( canRegister() == false && cpt != 10);
+    if(cpt<10){
+        registerObject();
     
     activeIt=0;
+    }
+    
 }
 bool EvalMyEnergyItem::relocate(double ymin, double ymax,bool ecart)
 {
@@ -123,6 +125,7 @@ bool EvalMyEnergyItem::relocate(double ymin, double ymax,bool ecart)
     
     int border = 40;
     
+    int cpt = 0;
     //double pi = atan(1)*4;
     if(!ecart){
         setCoordinates(ymin,ymax);
@@ -130,7 +133,7 @@ bool EvalMyEnergyItem::relocate(double ymin, double ymax,bool ecart)
     if(ecart || canRegister()== false){
         
         do{
-            
+            cpt = cpt+1;
             double yPos;
             
             yPos = random01() * (ymax-ymin) + ymin;
@@ -152,12 +155,14 @@ bool EvalMyEnergyItem::relocate(double ymin, double ymax,bool ecart)
             
             setCoordinates(x,y);
             
-        } while ( canRegister() == false );
+        } while ( canRegister() == false && cpt != 10);
     }
-    
-    registerObject();
+     
+    if(cpt<10){
+        registerObject();
     
     activeIt=0;
+    }
 }
 bool EvalMyEnergyItem::relocate(double ymin, double ymax,bool ecart,double offset, double range )
 {
@@ -168,6 +173,7 @@ bool EvalMyEnergyItem::relocate(double ymin, double ymax,bool ecart,double offse
     int border = 40;
     double x,y;
     double xPos;
+    int cpt = 0;
     //double pi = atan(1)*4;
     if(!ecart){
         setCoordinates(ymin,ymax);
@@ -195,12 +201,15 @@ bool EvalMyEnergyItem::relocate(double ymin, double ymax,bool ecart,double offse
             
             setCoordinates(x,y);
                 
-        } while ( canRegister() == false );
+        }  while ( canRegister() == false && cpt != 10);
     }
     
-    registerObject();
+    
+    if(cpt<10){
+        registerObject();
     
     activeIt=0;
+    }
 }
 bool EvalMyEnergyItem::relocate(double xmin, double xmax, double ymin, double ymax)
 {
@@ -211,9 +220,9 @@ bool EvalMyEnergyItem::relocate(double xmin, double xmax, double ymin, double ym
     int border = 40;
     
     //double pi = atan(1)*4;
-    
+    int cpt = 0;
     do{
-        
+        cpt=cpt+1;
         double xPos;
         
         xPos = random01() * (xmax-xmin) + xmin;
@@ -239,9 +248,12 @@ bool EvalMyEnergyItem::relocate(double xmin, double xmax, double ymin, double ym
         
         setCoordinates(x,y);
         
-    } while ( canRegister() == false );
+    } while ( canRegister() == false && cpt != 10);
     
-    registerObject();
+    
+    if(cpt<10){
+        registerObject();
     
     activeIt=0;
+    }
 }
