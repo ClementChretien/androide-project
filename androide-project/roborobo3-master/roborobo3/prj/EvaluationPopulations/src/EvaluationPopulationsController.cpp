@@ -235,8 +235,8 @@ void EvaluationPopulationsController::step(){
     Point2d p = getPosition(); 
     double normalT = abs(sortie.back());
         
-    double maxRampSpeed = 0.3;
-    double minRampSpeed = -0.3;
+    double maxRampSpeed = 0.1;
+    double minRampSpeed = -0.1;
     double orientation = getOrientation();
     //std::cout << "Translation : "<<normalT<<"\n";
     if (/*p.x > 250 && p.x < 670 &&*/ p.y > 450&& p.y < 700){

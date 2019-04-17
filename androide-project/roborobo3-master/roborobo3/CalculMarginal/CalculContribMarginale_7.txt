@@ -1,1 +1,1 @@
-contribMarg de R : -11contribMarg de B : 18contribMarg de C : 27contribMarg de H : 14
+contribMarg de R : 2contribMarg de B : 32contribMarg de C : 31contribMarg de H : 30

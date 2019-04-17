@@ -1,23 +1,19 @@
 import math
 import matplotlib.pyplot as plt
 def calcShapley():
-	for nbAgent in range(3,10):
+	for nbAgent in range(6,9):
 		calcMargFile = open("CalculContribMarginale_"+str(nbAgent)+".txt","w")
 		fName = "ResultatEval"+str(nbAgent)+".txt"
 		f1Name = "ResultatEval"+str(nbAgent+1)+".txt"
 		agent = ['R','B','C','H']
 		comb=[]
 		for r in range(nbAgent+1):
-			print("r")
 			for b in range(nbAgent+1-r):
 				for h in range(nbAgent+1-r-b):
 					c = nbAgent-r-b-h
 					comb.append( [r,b,c,h])
-		print("Read")
 		dic = getTabFile(fName)
-		print("First read")
 		dic1 = getTabFile(f1Name)
-		print("End READ")
 		val = []
 		for ag in range(len(agent)):
 			print(agent[ag])
