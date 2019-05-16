@@ -1,7 +1,7 @@
 import math
 import matplotlib.pyplot as plt
 def calcShapley():
-	for nbAgent in range(6,9):
+	for nbAgent in range(5,8):
 		calcMargFile = open("CalculContribMarginale_"+str(nbAgent)+".txt","w")
 		fName = "ResultatEval"+str(nbAgent)+".txt"
 		f1Name = "ResultatEval"+str(nbAgent+1)+".txt"

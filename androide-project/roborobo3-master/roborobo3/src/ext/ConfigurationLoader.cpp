@@ -9,6 +9,7 @@
 #include "Config/TutorialConfigurationLoader.h"
 #include "Config/MyOwnProjectConfigurationLoader.h"
 #include "Config/EvaluationPopulationsConfigurationLoader.h"
+#include "Config/RandomShapleyValueConfigurationLoader.h"
 //###DO-NOT-DELETE-THIS-LINE###TAG:INCLUDE###//
 
 
@@ -86,6 +87,12 @@ ConfigurationLoader* ConfigurationLoader::make_ConfigurationLoader (std::string 
 	else if (configurationLoaderObjectName == "EvaluationPopulationsConfigurationLoader" )
 	{
 		return new EvaluationPopulationsConfigurationLoader();
+	}
+#endif
+#if defined PRJ_RANDOMSHAPLEYVALUE || !defined MODULAR
+	else if (configurationLoaderObjectName == "RandomShapleyValueConfigurationLoader" )
+	{
+		return new RandomShapleyValueConfigurationLoader();
 	}
 #endif
     //###DO-NOT-DELETE-THIS-LINE###TAG:SWITCH###//

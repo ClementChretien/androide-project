@@ -1,0 +1,259 @@
+//
+//  RSVEvalMyEnergyItem.cpp
+//  roborobo3
+//
+//  Created by Nicolas Bredeche on 06/12/17.
+//  Copyright © 2017 Nicolas Bredeche. All rights reserved.
+//
+
+#include "RandomShapleyValue/include/RSVEvalMyEnergyItem.h"
+#include "RandomShapleyValue/include/RandomShapleyValueController.h"
+#include "RoboroboMain/roborobo.h"
+#include "World/World.h"
+#include "WorldModels/RobotWorldModel.h"
+#include "Utilities/Misc.h"
+
+
+RSVEvalMyEnergyItem::RSVEvalMyEnergyItem( int __id ) : EnergyItem( __id )
+{
+    
+}
+
+void RSVEvalMyEnergyItem::step()
+{
+    EnergyItem::step();
+ 
+    if ( activeIt == 1000 * 2 ) // relocate after xxx iterations (if not harvested inbetween)
+    {
+        relocate(); // incl. activeIt=0
+        _visible = true;
+    }
+}
+
+void RSVEvalMyEnergyItem::isTouched( int __idAgent )
+{
+    //EnergyItem::isTouched(__idAgent);
+    RandomShapleyValueController *c = dynamic_cast<RandomShapleyValueController*>(gWorld->getRobot(__idAgent)->getController());
+    if(c->getCanCollect() == true){
+        c->setObjCollected(true);
+        //std::cout << "Collected\n";
+        this->setRegion(0.0,0.2);
+        this->relocate();
+        this->unregisterObject();
+    }
+    else{
+        //std::cout << "Not Collected";
+    }
+    //std::cout << (c->getCanCollect());
+}
+
+void RSVEvalMyEnergyItem::isWalked( int __idAgent )
+{
+    /*//EnergyItem::isWalked(__idAgent);
+    RandomShapleyValueController *c = dynamic_cast<RandomShapleyValueController*>(gWorld->getRobot(__idAgent)->getController());
+    //std::cout << (c->getCanCollect());
+    if(c->getCanCollect() == true){
+        c->setObjCollected(true);
+        std::cout << "Collected";
+        this->unregisterObject();
+    }
+    else{
+       // std::cout << "Not Collected";
+        _visible = true;
+    }*/
+}
+
+void RSVEvalMyEnergyItem::isPushed( int __id, std::tuple<double, double> __speed )
+{
+    //EnergyItem::isPushed(__id,__speed);
+}
+
+void RSVEvalMyEnergyItem::setRegion( double offset, double range )
+{
+    this->_offsetRegion = offset;
+    this->_range = range;
+}
+
+void RSVEvalMyEnergyItem::relocate()
+{
+    // * pick new coordinate
+    
+    unregisterObject();
+    
+    int border = 40;
+    
+    //double pi = atan(1)*4;
+    int cpt = 0;
+    do{
+        cpt=cpt+1;
+        double xPos;
+        
+        xPos = random01() * this->_range + this->_offsetRegion;
+        
+        // with a sigmoid
+        //double value = random01();
+        //xPos = (1/(1 + std::exp(-value*5 + 13)))*3000; // (1/(1 + Exp[-x*5 + 13])*3000) <===
+        //xPos = std::pow(value,3); // x^3   <==
+        //xPos = (1/(1 + std::exp(-value*5 + 5)))*2; // (1/(1 + Exp[-x*5 + 5]))
+        //xPos = 1 - ( 1 / (1 + std::exp( -value * 10 + 5))); // 1 - (1/(1 + Exp[-x*10 + 5]))
+        
+        // with a gaussian
+        //double sigma = 0.2;
+        //double gaussianPeakValue = 1.0 / std::sqrt( 2. * pi * std::pow(sigma,2) );
+        //xPos = sigma*randgaussian() / gaussianPeakValue;
+        
+        double x = random01() * ( gScreenWidth - 2*border ) + border;
+        double y = xPos * ( gScreenHeight - 2*border ) + border;
+        setCoordinates(x,y);
+        if(y>500){
+            std::cout <<"Pb";
+        }
+        
+    } while ( canRegister() == false && cpt < 10);
+    if(cpt<10){
+        registerObject();
+    
+        activeIt=0;
+    }
+    
+}
+bool RSVEvalMyEnergyItem::relocate(double ymin, double ymax,bool ecart)
+{
+    // * pick new coordinate
+    
+    unregisterObject();
+    
+    int border = 40;
+    
+    int cpt = 0;
+    //double pi = atan(1)*4;
+    if(!ecart){
+        setCoordinates(ymin,ymax);
+    }
+    if(ecart || canRegister()== false){
+        
+        do{
+            cpt = cpt+1;
+            double yPos;
+            
+            yPos = random01() * (ymax-ymin) + ymin;
+            
+            // with a sigmoid
+            //double value = random01();
+            //xPos = (1/(1 + std::exp(-value*5 + 13)))*3000; // (1/(1 + Exp[-x*5 + 13])*3000) <===
+            //xPos = std::pow(value,3); // x^3   <==
+            //xPos = (1/(1 + std::exp(-value*5 + 5)))*2; // (1/(1 + Exp[-x*5 + 5]))
+            //xPos = 1 - ( 1 / (1 + std::exp( -value * 10 + 5))); // 1 - (1/(1 + Exp[-x*10 + 5]))
+            
+            // with a gaussian
+            //double sigma = 0.2;
+            //double gaussianPeakValue = 1.0 / std::sqrt( 2. * pi * std::pow(sigma,2) );
+            //xPos = sigma*randgaussian() / gaussianPeakValue;
+            
+            double x = random01() * ( gScreenWidth - 2*border );
+            double y = yPos;// * ( gScreenHeight - 2*border ) + border;
+            
+            setCoordinates(x,y);
+            
+        } while ( canRegister() == false && cpt < 10);
+    }
+     
+    if(cpt<10){
+        registerObject();
+    
+        activeIt=0;
+    }
+}
+bool RSVEvalMyEnergyItem::relocate(double ymin, double ymax,bool ecart,double offset, double range )
+{
+    // * pick new coordinate
+    
+    unregisterObject();
+    
+    int border = 40;
+    double x,y;
+    double xPos;
+    int cpt = 0;
+    //double pi = atan(1)*4;
+    if(!ecart){
+        setCoordinates(ymin,ymax);
+    }
+    if(ecart || canRegister()== false){
+        do{
+            
+            cpt = cpt+1;
+            xPos = random01() * range + offset;
+            
+            // with a sigmoid
+            //double value = random01();
+            //xPos = (1/(1 + std::exp(-value*5 + 13)))*3000; // (1/(1 + Exp[-x*5 + 13])*3000) <===
+            //xPos = std::pow(value,3); // x^3   <==
+            //xPos = (1/(1 + std::exp(-value*5 + 5)))*2; // (1/(1 + Exp[-x*5 + 5]))
+            //xPos = 1 - ( 1 / (1 + std::exp( -value * 10 + 5))); // 1 - (1/(1 + Exp[-x*10 + 5]))
+            
+            // with a gaussian
+            //double sigma = 0.2;
+            //double gaussianPeakValue = 1.0 / std::sqrt( 2. * pi * std::pow(sigma,2) );
+            //xPos = sigma*randgaussian() / gaussianPeakValue;
+            
+            x = random01() * ( gScreenWidth - 2*border ) + border;
+            y = xPos * ( gScreenHeight - 2*border ) + border;
+            
+            setCoordinates(x,y);
+                
+        }  while ( canRegister() == false && cpt < 10);
+    }
+    
+    
+    if(cpt<10){
+        registerObject();
+    
+    activeIt=0;
+    }
+}
+bool RSVEvalMyEnergyItem::relocate(double xmin, double xmax, double ymin, double ymax)
+{
+    // * pick new coordinate
+    
+    unregisterObject();
+    
+    int border = 40;
+    
+    //double pi = atan(1)*4;
+    int cpt = 0;
+    do{
+        cpt=cpt+1;
+        double xPos;
+        
+        xPos = random01() * (xmax-xmin) + xmin;
+
+        double yPos;
+        
+        yPos = random01() * (ymax-ymin) + ymin;
+        
+        // with a sigmoid
+        //double value = random01();
+        //xPos = (1/(1 + std::exp(-value*5 + 13)))*3000; // (1/(1 + Exp[-x*5 + 13])*3000) <===
+        //xPos = std::pow(value,3); // x^3   <==
+        //xPos = (1/(1 + std::exp(-value*5 + 5)))*2; // (1/(1 + Exp[-x*5 + 5]))
+        //xPos = 1 - ( 1 / (1 + std::exp( -value * 10 + 5))); // 1 - (1/(1 + Exp[-x*10 + 5]))
+        
+        // with a gaussian
+        //double sigma = 0.2;
+        //double gaussianPeakValue = 1.0 / std::sqrt( 2. * pi * std::pow(sigma,2) );
+        //xPos = sigma*randgaussian() / gaussianPeakValue;
+        
+        double x = xPos;
+        double y = yPos;// * ( gScreenHeight - 2*border ) + border;
+        
+        setCoordinates(x,y);
+        
+    } while ( canRegister() == false && cpt < 10);
+    
+    
+    if(cpt<10){
+        registerObject();
+    
+    activeIt=0;
+    }
+}
