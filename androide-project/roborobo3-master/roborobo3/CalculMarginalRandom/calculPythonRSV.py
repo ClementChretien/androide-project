@@ -1,16 +1,21 @@
 import math
 import matplotlib.pyplot as plt
-def calcShapley():
-	for nbAgent in range(10,11):
-		calcMargFile = open("CalculContribMarginale_"+str(nbAgent)+".txt","w")
-		fName = "ResultatEvalRSV30"+str(nbAgent)+".txt"
-		f1Name = "ResultatEvalRSV30"+str(nbAgent+1)+".txt"
+import random
+pourcentage = 15
+iAgent = 1
+iMaxAgent = 10
+def calcShapley(iAgent,iMaxAgent,pourcentage = 100):
+	for nbAgent in range(iAgent,iMaxAgent):
+		calcMargFile = open("CalculContribMarginaleRSV"+str(pourcentage)+"_"+str(nbAgent)+".txt","w")
+		fName = "ResultatEval"+str(nbAgent)+".txt"
+		f1Name = "ResultatEval"+str(nbAgent+1)+".txt"
 		agent = ['R','B','C','H']
 		dic = getTabFile(fName)
 		print(dic)
 		dic1 = getTabFile(f1Name)
 		comb=[]
 		k=dic.keys()
+		k = random.sample(k,int(len(k)*(pourcentage/100)))
 		for ke in k:
 			r,b,c,h = ke.split('/')
 			comb.append([int(r),int(b),int(c),int(h)])
@@ -25,9 +30,9 @@ def calcShapley():
 				toFind7 = str(co[0]+int(ag==0))+"/"+str(co[1]+int(ag==1))+"/"+str(co[2]+int(ag==2))+"/"+str(co[3]+int(ag==3))
 				cn1 = int(dic1[toFind7])
 				somme+=(cn1-cn)
-			somme = somme/math.factorial(len(agent))
-			print("contribMarg de "+str(agent[ag])+" : " +str(somme))
-			calcMargFile.write("contribMarg de "+str(agent[ag])+" : " +str(somme))
+			somme = somme/(math.factorial(len(agent))*(pourcentage/100))
+			print("contribMarg de "+str(agent[ag])+" : " +str(somme)+"\n")
+			calcMargFile.write(str(agent[ag])+" " +str(somme)+"\n")
 			val.append(somme)
 		calcMargFile.close()
 		print(agent)
@@ -65,4 +70,4 @@ def findValueInFile(f,val):
 	return -1
 
 
-calcShapley()
+calcShapley(iAgent,iMaxAgent,pourcentage)

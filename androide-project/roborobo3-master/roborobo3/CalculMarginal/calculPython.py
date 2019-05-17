@@ -1,7 +1,7 @@
 import math
 import matplotlib.pyplot as plt
 def calcShapley():
-	for nbAgent in range(5,8):
+	for nbAgent in range(1,10):
 		calcMargFile = open("CalculContribMarginale_"+str(nbAgent)+".txt","w")
 		fName = "ResultatEval"+str(nbAgent)+".txt"
 		f1Name = "ResultatEval"+str(nbAgent+1)+".txt"
@@ -25,8 +25,8 @@ def calcShapley():
 				cn1 = int(dic1[toFind7])
 				somme+=(cn1-cn)
 			somme = somme/math.factorial(len(agent))
-			print("contribMarg de "+str(agent[ag])+" : " +str(somme))
-			calcMargFile.write("contribMarg de "+str(agent[ag])+" : " +str(somme))
+			print("contribMarg de "+str(agent[ag])+" : " +str(somme)+"\n")
+			calcMargFile.write(str(agent[ag])+" " +str(somme)+"\n")
 			val.append(somme)
 		calcMargFile.close()
 		print(agent)
