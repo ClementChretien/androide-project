@@ -1,9 +1,9 @@
 import math
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import random
 pourcentage = 15
 iAgent = 1
-iMaxAgent = 10
+iMaxAgent = 12
 def calcShapley(iAgent,iMaxAgent,pourcentage = 100):
 	for nbAgent in range(iAgent,iMaxAgent):
 		calcMargFile = open("CalculContribMarginaleRSV"+str(pourcentage)+"_"+str(nbAgent)+".txt","w")
@@ -38,9 +38,9 @@ def calcShapley(iAgent,iMaxAgent,pourcentage = 100):
 		print(agent)
 		print(val)
 		
-		plt.bar([1,2,3,4],val)
-		plt.xticks([1,2,3,4],agent)
-		plt.show()
+		#plt.bar([1,2,3,4],val)
+		#plt.xticks([1,2,3,4],agent)
+		#plt.show()
 
 def getTabFile(f):
 	fp = open(f,'r')
